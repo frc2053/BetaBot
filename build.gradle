@@ -100,7 +100,7 @@ model {
             wpi.cpp.deps.wpilib(it)
             wpi.cpp.deps.googleTest(it)
         }
-    } 
+    }
 }
 
 tasks.register("writeBranchName") {
