@@ -22,8 +22,6 @@ This repo holds our code for the Beta 2025 Robot. Our test drivebase is a swerve
     `./venv/Scripts/Activate.ps1`
 - Install the code formatter
     `pip install -r requirements.txt`
-- Install the pre-commit hooks for formatting
-    `pre-commit install`
 
 ## Build steps:
 - To build the code, press Ctrl+Shift+P and search for "Build Robot Code". This will build the robot code for the robot, as well as simulation (desktop).
@@ -31,3 +29,12 @@ This repo holds our code for the Beta 2025 Robot. Our test drivebase is a swerve
 ## To run:
 - To run in simulation, press Ctrl+Shift+P and search for "Simulate Robot Code". This will launch the simulation.
 - To run the code on the robot, press Ctrl+Shift+P and search for "Deploy Robot Code". This will search for a RoboRio over USB or the network and upload the code to the robot.
+
+## Running formatting:
+- Run wpiformat with your venv activated
+
+## To make a PR:
+- Create a branch from main
+- Push to your branch
+- Make sure your commits follow the formatting rules or else you can't merge
+- Make a PR on github
