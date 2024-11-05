@@ -6,35 +6,30 @@
 
 using namespace subsystems;
 
-// void CommandSwerveDrivetrain::FollowPath(frc::Pose2d const &pose,
-// choreo::SwerveSample const &sample)
-// {
-//     m_pathThetaController.EnableContinuousInput(
-//         units::radian_t{-0.5_tr}.value(),
-//         units::radian_t{0.5_tr}.value()
-//     );
+void CommandSwerveDrivetrain::FollowPath(frc::Pose2d const& pose,
+                                         choreo::SwerveSample const& sample) {
+  m_pathThetaController.EnableContinuousInput(units::radian_t{-0.5_tr}.value(),
+                                              units::radian_t{0.5_tr}.value());
 
-//     auto targetSpeeds = sample.GetChassisSpeeds();
-//     targetSpeeds.vx += m_pathXController.Calculate(
-//         pose.X().value(), sample.x.value()
-//     ) * 1_mps;
-//     targetSpeeds.vy += m_pathYController.Calculate(
-//         pose.Y().value(), sample.y.value()
-//     ) * 1_mps;
-//     targetSpeeds.omega += m_pathThetaController.Calculate(
-//         pose.Rotation().Radians().value(), sample.heading.value()
-//     ) * 1_rad_per_s;
+  auto targetSpeeds = sample.GetChassisSpeeds();
+  targetSpeeds.vx +=
+      m_pathXController.Calculate(pose.X().value(), sample.x.value()) * 1_mps;
+  targetSpeeds.vy +=
+      m_pathYController.Calculate(pose.Y().value(), sample.y.value()) * 1_mps;
+  targetSpeeds.omega +=
+      m_pathThetaController.Calculate(pose.Rotation().Radians().value(),
+                                      sample.heading.value()) *
+      1_rad_per_s;
 
-//     std::vector moduleForcesX(sample.moduleForcesX.begin(),
-//     sample.moduleForcesX.end()); std::vector
-//     moduleForcesY(sample.moduleForcesY.begin(), sample.moduleForcesY.end());
+  std::vector moduleForcesX(sample.moduleForcesX.begin(),
+                            sample.moduleForcesX.end());
+  std::vector moduleForcesY(sample.moduleForcesY.begin(),
+                            sample.moduleForcesY.end());
 
-//     SetControl(
-//         m_pathApplyFieldSpeeds.WithSpeeds(targetSpeeds)
-//             .WithWheelForceFeedforwardsX(std::move(moduleForcesX))
-//             .WithWheelForceFeedforwardsY(std::move(moduleForcesY))
-//     );
-// }
+  SetControl(m_pathApplyFieldSpeeds.WithSpeeds(targetSpeeds)
+                 .WithWheelForceFeedforwardsX(std::move(moduleForcesX))
+                 .WithWheelForceFeedforwardsY(std::move(moduleForcesY)));
+}
 
 void CommandSwerveDrivetrain::Periodic() {
   /*

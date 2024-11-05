@@ -6,8 +6,8 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
-#include "SwerveTelemetry.h"
 
+#include "SwerveTelemetry.h"
 #include "generated/TunerConstants.h"
 
 class RobotContainer {
@@ -24,7 +24,7 @@ class RobotContainer {
  private:
   void ConfigureBindings();
 
-  frc2::CommandXboxController joystick{0};
+  frc2::CommandXboxController driverJoystick{0};
 
   units::meters_per_second_t MaxSpeed =
       TunerConstants::kSpeedAt12Volts;  // kSpeedAt12Volts desired top speed

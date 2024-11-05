@@ -32,11 +32,11 @@ class TunerConstants {
   // The closed-loop output type to use for the steer motors;
   // This affects the PID/FF gains for the steer motors
   static constexpr swerve::ClosedLoopOutputType kSteerClosedLoopOutput =
-      swerve::ClosedLoopOutputType::Voltage;
+      swerve::ClosedLoopOutputType::TorqueCurrentFOC;
   // The closed-loop output type to use for the drive motors;
   // This affects the PID/FF gains for the drive motors
   static constexpr swerve::ClosedLoopOutputType kDriveClosedLoopOutput =
-      swerve::ClosedLoopOutputType::Voltage;
+      swerve::ClosedLoopOutputType::TorqueCurrentFOC;
 
   // The remote sensor feedback type to use for the steer motors;
   // When not Pro-licensed, FusedCANcoder/SyncCANcoder automatically fall back

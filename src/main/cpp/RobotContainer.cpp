@@ -12,12 +12,22 @@ RobotContainer::RobotContainer() {
 
 void RobotContainer::ConfigureBindings() {
   drivetrain.SetDefaultCommand(drivetrain.ApplyRequest([this] {
-    return drive.WithVelocityX(-joystick.GetLeftY() * MaxSpeed)
-        .WithVelocityY(-joystick.GetLeftX() * MaxSpeed)
-        .WithRotationalRate(-joystick.GetRightX() * MaxAngularRate);
+    return drive.WithVelocityX(-driverJoystick.GetLeftY() * MaxSpeed)
+        .WithVelocityY(-driverJoystick.GetLeftX() * MaxSpeed)
+        .WithRotationalRate(-driverJoystick.GetRightX() * MaxAngularRate);
   }));
 
-  drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+  (driverJoystick.Back() && driverJoystick.Y())
+      .WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
+  (driverJoystick.Back() && driverJoystick.X())
+      .WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
+  (driverJoystick.Start() && driverJoystick.Y())
+      .WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
+  (driverJoystick.Start() && driverJoystick.X())
+      .WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
+
+  drivetrain.RegisterTelemetry(
+      [this](auto const& state) { logger.Telemeterize(state); });
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

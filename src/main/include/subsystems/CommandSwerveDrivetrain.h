@@ -4,7 +4,7 @@
 
 #pragma once
 
-// #include <choreo/trajectory/SwerveSample.h>
+#include <choreo/trajectory/SwerveSample.h>
 #include <frc/DriverStation.h>
 #include <frc/Notifier.h>
 #include <frc/controller/PIDController.h>
@@ -135,8 +135,7 @@ class CommandSwerveDrivetrain : public frc2::SubsystemBase,
         [this, request = std::move(request)] { return SetControl(request()); });
   }
 
-  // void FollowPath(frc::Pose2d const &pose, choreo::SwerveSample const
-  // &sample);
+  void FollowPath(frc::Pose2d const& pose, choreo::SwerveSample const& sample);
 
   frc2::CommandPtr SysIdQuasistatic(frc2::sysid::Direction direction) {
     return m_sysIdRoutineToApply->Quasistatic(direction);

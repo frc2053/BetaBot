@@ -148,7 +148,7 @@ JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 KeepEmptyLinesAtEOF: false
 LambdaBodyIndentation: Signature
-LineEnding:      DeriveLF
+LineEnding:      CRLF
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
 Macros:
