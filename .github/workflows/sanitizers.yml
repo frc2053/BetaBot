@@ -37,6 +37,6 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Compile and run tests on robot code
-      # env: 
-        # TSAN_OPTIONS: suppressions=${{ github.workspace }}/.github/workflows/tsan_suppressions
+      env: 
+        TSAN_OPTIONS: suppressions=${{ github.workspace }}/.github/workflows/tsan_suppressions
       run: ./gradlew build ${{ matrix.gradle-flags }}
