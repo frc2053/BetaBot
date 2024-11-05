@@ -10,7 +10,7 @@
 
 Robot::Robot() {
   frc::DataLogManager::Start();
-  frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
+  frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog())
 }
 
 void Robot::RobotPeriodic() {
