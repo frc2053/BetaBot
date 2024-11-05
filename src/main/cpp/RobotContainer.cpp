@@ -10,7 +10,15 @@ RobotContainer::RobotContainer() {
   ConfigureBindings();
 }
 
-void RobotContainer::ConfigureBindings() {}
+void RobotContainer::ConfigureBindings() {
+  drivetrain.SetDefaultCommand(drivetrain.ApplyRequest([this] {
+    return drive.WithVelocityX(-joystick.GetLeftY() * MaxSpeed)
+        .WithVelocityY(-joystick.GetLeftX() * MaxSpeed)
+        .WithRotationalRate(-joystick.GetRightX() * MaxAngularRate);
+  }));
+
+  drivetrain.RegisterTelemetry([this](auto const &state) { logger.Telemeterize(state); });
+}
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   return frc2::cmd::Print("No autonomous command configured");
