@@ -6,14 +6,13 @@
 
 #include <frc/geometry/Pose2d.h>
 
-#include "Constants.h"
+#include "constants/Constants.h"
 
-namespace str {
-namespace math {
+namespace str::math {
 static bool IsPointInsideField(const frc::Translation2d& point) {
   return point.X() >= 0_m && point.Y() >= 0_m &&
-         point.X() <= consts::yearSpecific::aprilTagLayout.GetFieldLength() &&
-         point.Y() <= consts::yearSpecific::aprilTagLayout.GetFieldWidth();
+         point.X() <= consts::yearspecific::tagLayout.GetFieldLength() &&
+         point.Y() <= consts::yearspecific::tagLayout.GetFieldWidth();
 }
 
 static bool IsRobotInsideField(units::meter_t robotTotalWidth,
@@ -52,5 +51,4 @@ static bool IsRobotInsideField(units::meter_t robotTotalWidth,
          math::IsPointInsideField(blCorner) &&
          math::IsPointInsideField(brCorner);
 }
-}  // namespace math
-}  // namespace str
+}  // namespace str::math

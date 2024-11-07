@@ -4,9 +4,11 @@
 
 #pragma once
 
-namespace consts {
-namespace yearSpecific {
-inline const frc::AprilTagFieldLayout aprilTagLayout =
+#include <frc/apriltag/AprilTagFieldLayout.h>
+
+#include "frc/apriltag/AprilTagFields.h"
+
+namespace consts::yearspecific {
+inline const frc::AprilTagFieldLayout tagLayout =
     frc::AprilTagFieldLayout::LoadField(frc::AprilTagField::k2024Crescendo);
-}  // namespace yearSpecific
-}  // namespace consts
+}  // namespace consts::yearspecific

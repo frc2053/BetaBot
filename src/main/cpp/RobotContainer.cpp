@@ -10,25 +10,7 @@ RobotContainer::RobotContainer() {
   ConfigureBindings();
 }
 
-void RobotContainer::ConfigureBindings() {
-  drivetrain.SetDefaultCommand(drivetrain.ApplyRequest([this] {
-    return drive.WithVelocityX(-driverJoystick.GetLeftY() * MaxSpeed)
-        .WithVelocityY(-driverJoystick.GetLeftX() * MaxSpeed)
-        .WithRotationalRate(-driverJoystick.GetRightX() * MaxAngularRate);
-  }));
-
-  (driverJoystick.Back() && driverJoystick.Y())
-      .WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kForward));
-  (driverJoystick.Back() && driverJoystick.X())
-      .WhileTrue(drivetrain.SysIdDynamic(frc2::sysid::Direction::kReverse));
-  (driverJoystick.Start() && driverJoystick.Y())
-      .WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kForward));
-  (driverJoystick.Start() && driverJoystick.X())
-      .WhileTrue(drivetrain.SysIdQuasistatic(frc2::sysid::Direction::kReverse));
-
-  drivetrain.RegisterTelemetry(
-      [this](auto const& state) { logger.Telemeterize(state); });
-}
+void RobotContainer::ConfigureBindings() {}
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   return frc2::cmd::Print("No autonomous command configured");

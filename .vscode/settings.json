@@ -21,4 +21,8 @@
   "editor.detectIndentation": false,
   "python.terminal.activateEnvInCurrentTerminal": true,
   "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "clangd.arguments": [
+    "-background-index",
+    "-compile-commands-dir=build/TargetedCompileCommands/linuxathenarelease"
+  ],
 }

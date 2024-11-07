@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "RobotContainer.h"
+#include "str/swerve/SwerveModule.h"
 
 class Robot : public frc::TimedRobot {
  public:
@@ -32,4 +33,7 @@ class Robot : public frc::TimedRobot {
   std::optional<frc2::CommandPtr> m_autonomousCommand;
 
   RobotContainer m_container;
+
+  str::swerve::SwerveModule flmodule{
+      str::swerve::ModuleConstants{"FL", 2, 3, 4, 0_tr, false, false}};
 };
