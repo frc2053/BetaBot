@@ -11,6 +11,7 @@
 
 #include "RobotContainer.h"
 #include "str/swerve/SwerveModule.h"
+#include "constants/SwerveConstants.h"
 
 class Robot : public frc::TimedRobot {
  public:
@@ -35,5 +36,6 @@ class Robot : public frc::TimedRobot {
   RobotContainer m_container;
 
   str::swerve::SwerveModule flmodule{
-      str::swerve::ModuleConstants{"FL", 2, 3, 4, 0_tr, false, false}};
+      consts::swerve::flModule, consts::swerve::physicalCharacteristics,
+      consts::swerve::steerGains, consts::swerve::driveGains};
 };
