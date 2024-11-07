@@ -14,6 +14,8 @@
 
 #include "SwerveModuleHelpers.h"
 #include "str/swerve/SwerveModuleHelpers.h"
+#include "units/current.h"
+#include "units/dimensionless.h"
 
 namespace str::swerve {
 
@@ -25,8 +27,11 @@ class SwerveModule {
 
  private:
   void ConfigureSteerEncoder(units::turn_t encoderOffset);
-  void ConfigureSteerMotor();
-  void ConfigureDriveMotor();
+  void ConfigureSteerMotor(bool invert, units::scalar_t gearing,
+                           units::ampere_t supplyLim,
+                           units::ampere_t statorLim);
+  void ConfigureDriveMotor(bool invert, units::ampere_t supplyLim,
+                           units::ampere_t statorLim);
 
   std::string moduleNamePrefix;
 

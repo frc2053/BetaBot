@@ -21,11 +21,11 @@ inline const str::swerve::ModulePhysicalCharacteristics physicalCharacteristics{
     (50.0 / 14.0) * (60.0 / 10.0),
     (50.0 / 16.0) * (16.0 / 28.0) * (45.0 / 15.0),
     40_A,
-    60_A,
+    80_A,
     40_A,
     80_A,
     frc::DCMotor::Falcon500FOC(1),
-    frc::DCMotor::KrakenX60(1),
+    frc::DCMotor::KrakenX60FOC(1),
     (50.0 / 16.0),
     1.9154_in};
 
