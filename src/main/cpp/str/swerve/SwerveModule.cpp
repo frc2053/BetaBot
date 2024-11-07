@@ -4,6 +4,8 @@
 
 #include "str/swerve/SwerveModule.h"
 
+#include <utility>
+
 #include "ctre/phoenix/StatusCodes.h"
 #include "ctre/phoenix6/core/CoreCANcoder.hpp"
 #include "ctre/phoenix6/signals/SpnEnums.hpp"

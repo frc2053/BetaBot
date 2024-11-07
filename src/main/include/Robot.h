@@ -10,8 +10,8 @@
 #include <optional>
 
 #include "RobotContainer.h"
-#include "str/swerve/SwerveModule.h"
 #include "constants/SwerveConstants.h"
+#include "str/swerve/SwerveModule.h"
 
 class Robot : public frc::TimedRobot {
  public:

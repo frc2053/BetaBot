@@ -7,6 +7,8 @@
 #include <frc/Alert.h>
 #include <units/angle.h>
 
+#include <string>
+
 #include <ctre/phoenix6/CANcoder.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
 
