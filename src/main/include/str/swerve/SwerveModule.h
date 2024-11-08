@@ -14,6 +14,7 @@
 
 #include "SwerveModuleHelpers.h"
 #include "str/swerve/SwerveModuleHelpers.h"
+#include "str/swerve/SwerveModuleSim.h"
 #include "units/current.h"
 #include "units/dimensionless.h"
 
@@ -24,6 +25,7 @@ class SwerveModule {
   explicit SwerveModule(const ModuleConstants& consts,
                         const ModulePhysicalCharacteristics& physical,
                         SteerGains steer, DriveGains drive);
+  void OptimizeBusSignals();
 
  private:
   void ConfigureSteerEncoder(units::turn_t encoderOffset);
@@ -32,15 +34,20 @@ class SwerveModule {
                            units::ampere_t statorLim);
   void ConfigureDriveMotor(bool invert, units::ampere_t supplyLim,
                            units::ampere_t statorLim);
+  void ConfigureControlSignals();
 
   std::string moduleNamePrefix;
 
   std::string encoderAlertMsg;
   std::string steerAlertMsg;
   std::string driveAlertMsg;
+  std::string optimizeSteerMsg;
+  std::string optimizeDriveMsg;
   frc::Alert configureEncoderAlert;
   frc::Alert configureSteerAlert;
   frc::Alert configureDriveAlert;
+  frc::Alert optimizeSteerMotorAlert;
+  frc::Alert optimizeDriveMotorAlert;
 
   SteerGains steerGains;
   DriveGains driveGains;
@@ -73,5 +80,7 @@ class SwerveModule {
 
   ctre::phoenix6::controls::VoltageOut steerVoltageSetter{0_V};
   ctre::phoenix6::controls::VoltageOut driveVoltageSetter{0_V};
+
+  SwerveModuleSim moduleSim;
 };
 }  // namespace str::swerve

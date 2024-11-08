@@ -11,6 +11,7 @@
 #include "ctre/phoenix6/signals/SpnEnums.hpp"
 #include "frc/Alert.h"
 #include "frc/DataLogManager.h"
+#include "str/swerve/SwerveModuleSim.h"
 #include "units/angle.h"
 
 using namespace str::swerve;
@@ -22,20 +23,27 @@ SwerveModule::SwerveModule(const ModuleConstants& consts,
       encoderAlertMsg{moduleNamePrefix + " Steer Encoder Configuration"},
       steerAlertMsg{moduleNamePrefix + " Steer Motor Configuration"},
       driveAlertMsg{moduleNamePrefix + " Drive Motor Configuration"},
+      optimizeSteerMsg{moduleNamePrefix + " Optimize Steer Signals"},
+      optimizeDriveMsg{moduleNamePrefix + " Optimize Drive Signals"},
       configureEncoderAlert(encoderAlertMsg, frc::Alert::AlertType::kError),
       configureSteerAlert(steerAlertMsg, frc::Alert::AlertType::kError),
       configureDriveAlert(driveAlertMsg, frc::Alert::AlertType::kError),
+      optimizeSteerMotorAlert(optimizeSteerMsg, frc::Alert::AlertType::kError),
+      optimizeDriveMotorAlert(optimizeDriveMsg, frc::Alert::AlertType::kError),
       steerGains{std::move(steer)},
       driveGains{std::move(drive)},
       steerEncoder{consts.encoderId, "*"},
       steerMotor{consts.steerId, "*"},
-      driveMotor{consts.driveId, "*"} {
+      driveMotor{consts.driveId, "*"},
+      moduleSim(consts, physical, driveMotor.GetSimState(),
+                steerMotor.GetSimState(), steerEncoder.GetSimState()) {
   ConfigureSteerEncoder(consts.steerEncoderOffset);
   ConfigureSteerMotor(consts.invertSteer, physical.steerGearing,
                       physical.steerSupplySideLimit,
                       physical.steerStatorCurrentLimit);
   ConfigureDriveMotor(consts.invertDrive, physical.driveSupplySideLimit,
                       physical.driveStatorCurrentLimit);
+  ConfigureControlSignals();
 }
 
 void SwerveModule::ConfigureSteerEncoder(units::turn_t encoderOffset) {
@@ -51,7 +59,7 @@ void SwerveModule::ConfigureSteerEncoder(units::turn_t encoderOffset) {
       steerEncoder.GetConfigurator().Apply(encoderConfig);
 
   frc::DataLogManager::Log(
-      fmt::format("Configured steer encoder on {} module. Result was: {}\n",
+      fmt::format("Configured steer encoder on {} module. Result was: {}",
                   moduleNamePrefix, configResult.GetName()));
 
   configureEncoderAlert.Set(!configResult.IsOK());
@@ -94,11 +102,13 @@ void SwerveModule::ConfigureSteerMotor(bool invert, units::scalar_t gearing,
   steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
   steerConfig.CurrentLimits.SupplyCurrentLimit = supplyLim;
 
+  steerConfig.MotorOutput.ControlTimesyncFreqHz = 250_Hz;
+
   ctre::phoenix::StatusCode configResult =
       steerMotor.GetConfigurator().Apply(steerConfig);
 
   frc::DataLogManager::Log(
-      fmt::format("Configured steer motor on {} module. Result was: {}\n",
+      fmt::format("Configured steer motor on {} module. Result was: {}",
                   moduleNamePrefix, configResult.GetName()));
 
   configureSteerAlert.Set(!configResult.IsOK());
@@ -133,12 +143,41 @@ void SwerveModule::ConfigureDriveMotor(bool invert, units::ampere_t supplyLim,
   driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
   driveConfig.CurrentLimits.SupplyCurrentLimit = supplyLim;
 
+  driveConfig.MotorOutput.ControlTimesyncFreqHz = 250_Hz;
+
   ctre::phoenix::StatusCode configResult =
       driveMotor.GetConfigurator().Apply(driveConfig);
 
   frc::DataLogManager::Log(
-      fmt::format("Configured drive motor on {} module. Result was: {}\n",
+      fmt::format("Configured drive motor on {} module. Result was: {}",
                   moduleNamePrefix, configResult.GetName()));
 
   configureDriveAlert.Set(!configResult.IsOK());
+}
+
+void SwerveModule::ConfigureControlSignals() {
+  steerAngleSetter.UpdateFreqHz = 0_Hz;
+  driveVelocitySetter.UpdateFreqHz = 0_Hz;
+  steerVoltageSetter.UpdateFreqHz = 0_Hz;
+  driveVoltageSetter.UpdateFreqHz = 0_Hz;
+  steerAngleSetter.UseTimesync = true;
+  driveVelocitySetter.UseTimesync = true;
+  steerVoltageSetter.UseTimesync = true;
+  driveVoltageSetter.UseTimesync = true;
+  driveVelocitySetter.OverrideCoastDurNeutral = true;
+}
+
+void SwerveModule::OptimizeBusSignals() {
+  ctre::phoenix::StatusCode optimizeDriveResult =
+      driveMotor.OptimizeBusUtilization();
+  frc::DataLogManager::Log(
+      fmt::format("Optimized bus signals for {} drive motor. Result was: {}",
+                  moduleNamePrefix, optimizeDriveResult.GetName()));
+  ctre::phoenix::StatusCode optimizeSteerResult =
+      steerMotor.OptimizeBusUtilization();
+  frc::DataLogManager::Log(
+      fmt::format("Optimized bus signals for {} steer motor. Result was {}",
+                  moduleNamePrefix, optimizeSteerResult.GetName()));
+  optimizeDriveMotorAlert.Set(!optimizeDriveResult.IsOK());
+  optimizeSteerMotorAlert.Set(!optimizeSteerResult.IsOK());
 }
