@@ -29,4 +29,5 @@ modifiableFileExclude {
   ctre_sim/
   .pathplanner/
   choreoproj.chor
+  venv/
 }

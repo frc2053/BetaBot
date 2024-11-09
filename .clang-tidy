@@ -1,4 +1,4 @@
-Checks:
+ Checks:
   'bugprone-assert-side-effect,
   bugprone-bool-pointer-implicit-conversion,
   bugprone-copy-constructor-init,
@@ -65,7 +65,8 @@ Checks:
   modernize-use-nullptr,
   modernize-use-override,
   modernize-use-using,
-  readability-braces-around-statements'
+  readability-braces-around-statements,
+  readability-identifier-naming'
 CheckOptions:
   - key: readability-identifier-naming.ConstantCase
     value: UPPER_CASE
