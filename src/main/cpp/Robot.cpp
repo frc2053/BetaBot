@@ -11,7 +11,6 @@
 Robot::Robot() {
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
-  flmodule.OptimizeBusSignals();
 }
 
 void Robot::RobotPeriodic() {

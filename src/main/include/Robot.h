@@ -6,12 +6,11 @@
 
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
+#include <str/swerve/SwerveDrive.h>
 
 #include <optional>
 
 #include "RobotContainer.h"
-#include "constants/SwerveConstants.h"
-#include "str/swerve/SwerveModule.h"
 
 class Robot : public frc::TimedRobot {
  public:
@@ -35,7 +34,5 @@ class Robot : public frc::TimedRobot {
 
   RobotContainer m_container;
 
-  str::swerve::SwerveModule flmodule{
-      consts::swerve::flModule, consts::swerve::physicalCharacteristics,
-      consts::swerve::steerGains, consts::swerve::driveGains};
+  str::swerve::SwerveDrive swerve{};
 };
