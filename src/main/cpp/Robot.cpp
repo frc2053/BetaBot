@@ -8,12 +8,16 @@
 #include <frc/DriverStation.h>
 #include <frc/Threads.h>
 #include <frc2/command/CommandScheduler.h>
+#include <ctre/phoenix6/SignalLogger.hpp>
 
 #include "constants/SwerveConstants.h"
+#include "ctre/phoenix6/StatusSignal.hpp"
 
 Robot::Robot() {
   // DANGEROUS MAKE SURE CODE DOESN'T BLOCK!!!
   frc::SetCurrentThreadPriority(true, 15);
+  ctre::phoenix6::SignalLogger::EnableAutoLogging(true);
+  ctre::phoenix6::SignalLogger::Start();
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
   AddPeriodic([this] { swerve.UpdateOdom(); },
