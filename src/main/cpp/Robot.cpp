@@ -8,13 +8,18 @@
 #include <frc/DriverStation.h>
 #include <frc2/command/CommandScheduler.h>
 
+#include "constants/SwerveConstants.h"
+
 Robot::Robot() {
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
+  AddPeriodic([this] { swerve.UpdateOdom(); },
+              1 / consts::swerve::ODOM_UPDATE_RATE, 2_ms);
 }
 
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
+  swerve.UpdateSimulation();
 }
 
 void Robot::DisabledInit() {}

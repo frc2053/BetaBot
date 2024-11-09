@@ -22,8 +22,7 @@ class SwerveModuleSim {
       ctre::phoenix6::sim::TalonFXSimState& steerSimState,
       ctre::phoenix6::sim::CANcoderSimState& steerEncoderSimState);
 
-  frc::SwerveModuleState Update(units::second_t deltaTime,
-                                units::volt_t supplyVoltage);
+  frc::SwerveModuleState Update(units::volt_t supplyVoltage);
   units::ampere_t GetSteerCurrentDraw() const;
   units::ampere_t GetDriveCurrentDraw() const;
 

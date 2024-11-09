@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ctre/phoenix/StatusCodes.h"
+#include "ctre/phoenix6/StatusSignal.hpp"
 #include "ctre/phoenix6/core/CoreCANcoder.hpp"
 #include "ctre/phoenix6/signals/SpnEnums.hpp"
 #include "frc/Alert.h"
@@ -30,6 +31,7 @@ SwerveModule::SwerveModule(const ModuleConstants& consts,
       configureDriveAlert(driveAlertMsg, frc::Alert::AlertType::kError),
       optimizeSteerMotorAlert(optimizeSteerMsg, frc::Alert::AlertType::kError),
       optimizeDriveMotorAlert(optimizeDriveMsg, frc::Alert::AlertType::kError),
+      physicalChar{physical},
       steerGains{std::move(steer)},
       driveGains{std::move(drive)},
       steerEncoder{consts.encoderId, "*"},
@@ -44,6 +46,59 @@ SwerveModule::SwerveModule(const ModuleConstants& consts,
   ConfigureDriveMotor(consts.invertDrive, physical.driveSupplySideLimit,
                       physical.driveStatorCurrentLimit);
   ConfigureControlSignals();
+}
+
+void SwerveModule::OptimizeBusSignals() {
+  ctre::phoenix::StatusCode optimizeDriveResult =
+      driveMotor.OptimizeBusUtilization();
+  frc::DataLogManager::Log(
+      fmt::format("Optimized bus signals for {} drive motor. Result was: {}",
+                  moduleNamePrefix, optimizeDriveResult.GetName()));
+  ctre::phoenix::StatusCode optimizeSteerResult =
+      steerMotor.OptimizeBusUtilization();
+  frc::DataLogManager::Log(
+      fmt::format("Optimized bus signals for {} steer motor. Result was {}",
+                  moduleNamePrefix, optimizeSteerResult.GetName()));
+  optimizeDriveMotorAlert.Set(!optimizeDriveResult.IsOK());
+  optimizeSteerMotorAlert.Set(!optimizeSteerResult.IsOK());
+}
+
+std::array<ctre::phoenix6::BaseStatusSignal*, 8> SwerveModule::GetSignals() {
+  return {&drivePositionSig, &driveVelocitySig,      &steerPositionSig,
+          &steerVelocitySig, &driveTorqueCurrentSig, &steerTorqueCurrentSig,
+          &driveVoltageSig,  &steerVoltageSig};
+}
+
+frc::SwerveModulePosition SwerveModule::GetPosition() {
+  units::radian_t latencyCompSteerPos =
+      ctre::phoenix6::BaseStatusSignal::GetLatencyCompensatedValue(
+          steerPositionSig, steerVelocitySig);
+  units::radian_t latencyCompDrivePos =
+      ctre::phoenix6::BaseStatusSignal::GetLatencyCompensatedValue(
+          drivePositionSig, driveVelocitySig);
+
+  latencyCompDrivePos -= latencyCompSteerPos * physicalChar.couplingRatio;
+
+  frc::SwerveModulePosition position{
+      ConvertWheelRotationsToWheelDistance(
+          ConvertDriveMotorRotationsToWheelRotations(latencyCompDrivePos)),
+      frc::Rotation2d{latencyCompSteerPos}};
+
+  return position;
+}
+
+frc::SwerveModuleState SwerveModule::GetState() {
+  frc::SwerveModuleState currentState{
+      ConvertWheelVelToLinearVel(
+          ConvertDriveMotorVelToWheelVel(driveVelocitySig.GetValue())),
+      frc::Rotation2d{steerPositionSig.GetValue()}};
+
+  return currentState;
+}
+
+frc::SwerveModuleState SwerveModule::UpdateSimulatedModule(
+    units::volt_t batteryVoltage) {
+  return moduleSim.Update(batteryVoltage);
 }
 
 void SwerveModule::ConfigureSteerEncoder(units::turn_t encoderOffset) {
@@ -167,17 +222,32 @@ void SwerveModule::ConfigureControlSignals() {
   driveVelocitySetter.OverrideCoastDurNeutral = true;
 }
 
-void SwerveModule::OptimizeBusSignals() {
-  ctre::phoenix::StatusCode optimizeDriveResult =
-      driveMotor.OptimizeBusUtilization();
-  frc::DataLogManager::Log(
-      fmt::format("Optimized bus signals for {} drive motor. Result was: {}",
-                  moduleNamePrefix, optimizeDriveResult.GetName()));
-  ctre::phoenix::StatusCode optimizeSteerResult =
-      steerMotor.OptimizeBusUtilization();
-  frc::DataLogManager::Log(
-      fmt::format("Optimized bus signals for {} steer motor. Result was {}",
-                  moduleNamePrefix, optimizeSteerResult.GetName()));
-  optimizeDriveMotorAlert.Set(!optimizeDriveResult.IsOK());
-  optimizeSteerMotorAlert.Set(!optimizeSteerResult.IsOK());
+units::radian_t SwerveModule::ConvertDriveMotorRotationsToWheelRotations(
+    units::radian_t motorRotations) const {
+  return motorRotations / physicalChar.driveGearing;
+}
+
+units::radians_per_second_t SwerveModule::ConvertDriveMotorVelToWheelVel(
+    units::radians_per_second_t motorVel) const {
+  return motorVel / physicalChar.driveGearing;
+}
+
+units::meter_t SwerveModule::ConvertWheelRotationsToWheelDistance(
+    units::radian_t wheelRotations) const {
+  return (wheelRotations / 1_rad) * physicalChar.wheelRadius;
+}
+
+units::meters_per_second_t SwerveModule::ConvertWheelVelToLinearVel(
+    units::radians_per_second_t wheelVel) const {
+  return (wheelVel / 1_rad) * physicalChar.wheelRadius;
+}
+
+units::radians_per_second_t SwerveModule::ConvertLinearVelToWheelVel(
+    units::meters_per_second_t linVel) const {
+  return (linVel / physicalChar.wheelRadius) * 1_rad;
+}
+
+units::radians_per_second_t SwerveModule::ConvertWheelVelToMotorVel(
+    units::radians_per_second_t wheelVel) const {
+  return wheelVel * physicalChar.driveGearing;
 }

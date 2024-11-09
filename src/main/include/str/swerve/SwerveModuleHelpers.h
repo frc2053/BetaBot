@@ -10,6 +10,7 @@
 #include <units/angle.h>
 #include <units/current.h>
 #include <units/dimensionless.h>
+#include <units/frequency.h>
 #include <units/length.h>
 #include <units/voltage.h>
 

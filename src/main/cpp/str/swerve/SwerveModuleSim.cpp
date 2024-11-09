@@ -43,8 +43,7 @@ SwerveModuleSim::SwerveModuleSim(
   steerSim.SetState(0_rad, 0_rad_per_s);
 }
 
-frc::SwerveModuleState SwerveModuleSim::Update(units::second_t deltaTime,
-                                               units::volt_t supplyVoltage) {
+frc::SwerveModuleState SwerveModuleSim::Update(units::volt_t supplyVoltage) {
   driveSimState.Orientation =
       driveInverted
           ? ctre::phoenix6::sim::ChassisReference::Clockwise_Positive
@@ -63,8 +62,8 @@ frc::SwerveModuleState SwerveModuleSim::Update(units::second_t deltaTime,
   steerSim.SetInputVoltage(AddFrictionVoltage(steerSimState.GetMotorVoltage(),
                                               steerFrictionVoltage));
 
-  driveSim.Update(deltaTime);
-  steerSim.Update(deltaTime);
+  driveSim.Update(1 / 50_Hz);
+  steerSim.Update(1 / 50_Hz);
 
   driveSimState.SetRawRotorPosition(driveSim.GetAngularPosition() *
                                     driveGearing);

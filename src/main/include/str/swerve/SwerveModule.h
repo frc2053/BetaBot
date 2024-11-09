@@ -13,6 +13,9 @@
 #include <ctre/phoenix6/TalonFX.hpp>
 
 #include "SwerveModuleHelpers.h"
+#include "ctre/phoenix6/StatusSignal.hpp"
+#include "frc/kinematics/SwerveModulePosition.h"
+#include "frc/kinematics/SwerveModuleState.h"
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "str/swerve/SwerveModuleSim.h"
 #include "units/current.h"
@@ -26,6 +29,10 @@ class SwerveModule {
                         const ModulePhysicalCharacteristics& physical,
                         SteerGains steer, DriveGains drive);
   void OptimizeBusSignals();
+  std::array<ctre::phoenix6::BaseStatusSignal*, 8> GetSignals();
+  frc::SwerveModulePosition GetPosition();
+  frc::SwerveModuleState GetState();
+  frc::SwerveModuleState UpdateSimulatedModule(units::volt_t batteryVoltage);
 
  private:
   void ConfigureSteerEncoder(units::turn_t encoderOffset);
@@ -35,6 +42,18 @@ class SwerveModule {
   void ConfigureDriveMotor(bool invert, units::ampere_t supplyLim,
                            units::ampere_t statorLim);
   void ConfigureControlSignals();
+  units::radian_t ConvertDriveMotorRotationsToWheelRotations(
+      units::radian_t motorRotations) const;
+  units::radians_per_second_t ConvertDriveMotorVelToWheelVel(
+      units::radians_per_second_t motorVel) const;
+  units::meter_t ConvertWheelRotationsToWheelDistance(
+      units::radian_t wheelRotations) const;
+  units::meters_per_second_t ConvertWheelVelToLinearVel(
+      units::radians_per_second_t wheelVel) const;
+  units::radians_per_second_t ConvertLinearVelToWheelVel(
+      units::meters_per_second_t linVel) const;
+  units::radians_per_second_t ConvertWheelVelToMotorVel(
+      units::radians_per_second_t wheelVel) const;
 
   std::string moduleNamePrefix;
 
@@ -49,6 +68,7 @@ class SwerveModule {
   frc::Alert optimizeSteerMotorAlert;
   frc::Alert optimizeDriveMotorAlert;
 
+  ModulePhysicalCharacteristics physicalChar;
   SteerGains steerGains;
   DriveGains driveGains;
 
