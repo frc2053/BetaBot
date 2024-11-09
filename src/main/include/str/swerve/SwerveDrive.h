@@ -6,9 +6,9 @@
 
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
+#include <networktables/DoubleTopic.h>
 #include <networktables/NetworkTable.h>
 #include <networktables/NetworkTableInstance.h>
-#include <networktables/DoubleTopic.h>
 #include <networktables/StructArrayTopic.h>
 
 #include <memory>
