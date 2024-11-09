@@ -6,11 +6,14 @@
 
 #include <frc/DataLogManager.h>
 #include <frc/DriverStation.h>
+#include <frc/Threads.h>
 #include <frc2/command/CommandScheduler.h>
 
 #include "constants/SwerveConstants.h"
 
 Robot::Robot() {
+  // DANGEROUS MAKE SURE CODE DOESN'T BLOCK!!!
+  frc::SetCurrentThreadPriority(true, 15);
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
   AddPeriodic([this] { swerve.UpdateOdom(); },
@@ -20,6 +23,7 @@ Robot::Robot() {
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
   swerve.UpdateSimulation();
+  swerve.UpdateNTEntries();
 }
 
 void Robot::DisabledInit() {}

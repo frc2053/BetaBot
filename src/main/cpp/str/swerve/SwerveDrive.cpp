@@ -22,7 +22,7 @@ SwerveDrive::SwerveDrive()
 void SwerveDrive::UpdateOdom() {
   ctre::phoenix::StatusCode status =
       ctre::phoenix6::BaseStatusSignal::WaitForAll(
-          1.0 / consts::swerve::ODOM_UPDATE_RATE, allSignals);
+          2.0 / consts::swerve::ODOM_UPDATE_RATE, allSignals);
 
   if (!status.IsOK()) {
     frc::DataLogManager::Log(fmt::format(
@@ -65,6 +65,10 @@ void SwerveDrive::UpdateSimulation() {
   lastSimAngle = lastSimAngle + frc::Rotation2d{angleChange};
   imuSimState.SetRawYaw(lastSimAngle.Degrees());
   imuSimState.SetAngularVelocityZ(omega);
+}
+
+void SwerveDrive::UpdateNTEntries() {
+  odomUpdateRatePub.Set(odomUpdateRate.value());
 }
 
 void SwerveDrive::SetupSignals() {

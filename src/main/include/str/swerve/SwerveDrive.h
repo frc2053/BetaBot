@@ -8,6 +8,7 @@
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include <networktables/NetworkTable.h>
 #include <networktables/NetworkTableInstance.h>
+#include <networktables/DoubleTopic.h>
 #include <networktables/StructArrayTopic.h>
 
 #include <memory>
@@ -24,6 +25,7 @@ class SwerveDrive {
   SwerveDrive();
   void UpdateOdom();
   void UpdateSimulation();
+  void UpdateNTEntries();
 
  private:
   void SetupSignals();
@@ -66,5 +68,7 @@ class SwerveDrive {
       nt::NetworkTableInstance::GetDefault().GetTable("Swerve")};
   nt::StructArrayPublisher<frc::SwerveModuleState> simStatesPub{
       nt->GetStructArrayTopic<frc::SwerveModuleState>("SimStates").Publish()};
+  nt::DoublePublisher odomUpdateRatePub{
+      nt->GetDoubleTopic("OdomUpdateRate").Publish()};
 };
 }  // namespace str::swerve
