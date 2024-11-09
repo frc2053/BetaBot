@@ -8,6 +8,7 @@
 #include <frc/DriverStation.h>
 #include <frc/Threads.h>
 #include <frc2/command/CommandScheduler.h>
+
 #include <ctre/phoenix6/SignalLogger.hpp>
 
 #include "constants/SwerveConstants.h"

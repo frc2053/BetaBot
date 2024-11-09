@@ -18,6 +18,7 @@
 #include <string_view>
 
 #include "units/angular_velocity.h"
+#include "units/velocity.h"
 
 namespace str::swerve {
 struct ModuleConstants {
@@ -55,6 +56,10 @@ struct ModulePhysicalCharacteristics {
   // Used for sim only
   const units::volt_t driveFrictionVoltage{0.25_V};
   const units::volt_t steerFrictionVoltage{0.25_V};
+
+  const units::meters_per_second_t MaxLinearSpeed() const {
+    return ((driveMotor.freeSpeed / 1_rad) / driveGearing) * wheelRadius;
+  }
 
   ModulePhysicalCharacteristics() = delete;
   ModulePhysicalCharacteristics(

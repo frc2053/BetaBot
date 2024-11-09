@@ -63,6 +63,44 @@ void SwerveModule::OptimizeBusSignals() {
   optimizeSteerMotorAlert.Set(!optimizeSteerResult.IsOK());
 }
 
+frc::SwerveModuleState SwerveModule::GoToState(frc::SwerveModuleState desired,
+                                               bool optimize, bool openLoop,
+                                               units::ampere_t arbFF) {
+  frc::SwerveModuleState currentState = GetState();
+  if (optimize) {
+    desired.Optimize(currentState.angle);
+  }
+
+  desired.CosineScale(currentState.angle);
+
+  steerMotor.SetControl(steerAngleSetter.WithPosition(desired.angle.Radians()));
+
+  units::radians_per_second_t motorSpeed =
+      ConvertWheelVelToMotorVel(ConvertLinearVelToWheelVel(desired.speed));
+
+  // Reverse the modules expected backout because of coupling
+  units::radians_per_second_t driveBackout =
+      steerVelocitySig.GetValue() * physicalChar.couplingRatio;
+  motorSpeed += driveBackout;
+
+  if (openLoop) {
+    driveMotor.SetControl(driveVoltageSetter.WithOutput(
+        (motorSpeed / ConvertWheelVelToMotorVel(ConvertLinearVelToWheelVel(
+                          physicalChar.MaxLinearSpeed()))) *
+        12_V));
+  } else {
+    driveMotor.SetControl(
+        driveVelocitySetter.WithVelocity(motorSpeed)
+            .WithFeedForward(units::math::copysign(arbFF, motorSpeed)));
+  }
+
+  // Just for logging
+  desired.speed =
+      ConvertWheelVelToLinearVel(ConvertDriveMotorVelToWheelVel(motorSpeed));
+
+  return desired;
+}
+
 std::array<ctre::phoenix6::BaseStatusSignal*, 8> SwerveModule::GetSignals() {
   return {&drivePositionSig, &driveVelocitySig,      &steerPositionSig,
           &steerVelocitySig, &driveTorqueCurrentSig, &steerTorqueCurrentSig,

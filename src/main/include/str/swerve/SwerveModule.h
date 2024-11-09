@@ -20,6 +20,7 @@
 #include "str/swerve/SwerveModuleSim.h"
 #include "units/current.h"
 #include "units/dimensionless.h"
+#include "units/velocity.h"
 
 namespace str::swerve {
 
@@ -29,6 +30,9 @@ class SwerveModule {
                         const ModulePhysicalCharacteristics& physical,
                         SteerGains steer, DriveGains drive);
   void OptimizeBusSignals();
+  frc::SwerveModuleState GoToState(frc::SwerveModuleState desired,
+                                   bool optimize, bool openLoop,
+                                   units::ampere_t arbFF);
   std::array<ctre::phoenix6::BaseStatusSignal*, 8> GetSignals();
   frc::SwerveModulePosition GetPosition();
   frc::SwerveModuleState GetState();

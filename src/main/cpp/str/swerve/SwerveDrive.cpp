@@ -9,6 +9,9 @@
 #include "constants/SwerveConstants.h"
 #include "ctre/phoenix/StatusCodes.h"
 #include "frc/Alert.h"
+#include "frc/geometry/Pose2d.h"
+#include "frc/kinematics/ChassisSpeeds.h"
+#include "frc/kinematics/SwerveModuleState.h"
 
 using namespace str::swerve;
 
@@ -17,6 +20,20 @@ SwerveDrive::SwerveDrive()
       imuOptimizeAlert{imuOptimizeAlertStr, frc::Alert::AlertType::kError} {
   ConfigureImu();
   SetupSignals();
+}
+
+frc::Pose2d SwerveDrive::GetPose() const {
+  return poseEstimator.GetEstimatedPosition();
+}
+
+void SwerveDrive::SetXModuleForces(
+    const std::array<units::newton_t, 4>& xForce) {
+  xModuleForce = xForce;
+}
+
+void SwerveDrive::SetYModuleForces(
+    const std::array<units::newton_t, 4>& yForce) {
+  yModuleForce = yForce;
 }
 
 void SwerveDrive::UpdateOdom() {
@@ -122,4 +139,74 @@ void SwerveDrive::ConfigureImu() {
   if (!imuConfigStatus.IsOK()) {
     imuConfigAlert.Set(true);
   }
+}
+
+void SwerveDrive::Drive(units::meters_per_second_t xVel,
+                        units::meters_per_second_t yVel,
+                        units::radians_per_second_t omega, bool openLoop) {
+  frc::ChassisSpeeds speedsToSend;
+  speedsToSend.vx = xVel;
+  speedsToSend.vy = yVel;
+  speedsToSend.omega = omega;
+
+  // https://github.com/wpilibsuite/allwpilib/issues/7332
+  wpi::array<frc::SwerveModuleState, 4> tempStates =
+      consts::swerve::KINEMATICS.ToSwerveModuleStates(speedsToSend);
+  frc::SwerveDriveKinematics<4>::DesaturateWheelSpeeds(
+      &tempStates, consts::swerve::PHY_CHAR.MaxLinearSpeed());
+  frc::ChassisSpeeds speeds =
+      consts::swerve::KINEMATICS.ToChassisSpeeds(tempStates);
+
+  speeds = frc::ChassisSpeeds::Discretize(speeds, (1 / 50_Hz));
+
+  std::array<frc::SwerveModuleState, 4> states =
+      consts::swerve::KINEMATICS.ToSwerveModuleStates(speeds);
+
+  SetModuleStates(
+      states, true, openLoop,
+      ConvertModuleForcesToTorqueCurrent(xModuleForce, yModuleForce));
+}
+
+void SwerveDrive::SetModuleStates(
+    const std::array<frc::SwerveModuleState, 4>& desiredStates, bool optimize,
+    bool openLoop, const std::array<units::ampere_t, 4> moduleTorqueCurrentFF) {
+  wpi::array<frc::SwerveModuleState, 4> finalState = desiredStates;
+  frc::SwerveDriveKinematics<4>::DesaturateWheelSpeeds(
+      &finalState, consts::swerve::PHY_CHAR.MaxLinearSpeed());
+  int i = 0;
+  for (auto& mod : modules) {
+    finalState[i] = mod.GoToState(finalState[i], optimize, openLoop,
+                                  moduleTorqueCurrentFF[i]);
+    i++;
+  }
+  // desiredStatesPub.Set(finalState);
+}
+
+std::array<units::ampere_t, 4> SwerveDrive::ConvertModuleForcesToTorqueCurrent(
+    const std::array<units::newton_t, 4>& xForce,
+    const std::array<units::newton_t, 4>& yForce) {
+  std::array<frc::SwerveModuleState, 4> forces;
+
+  std::array<units::ampere_t, 4> retVal;
+  for (int i = 0; i < 4; i++) {
+    if (xForce[i] == 0_N && yForce[0] == 0_N) {
+      break;
+    }
+    frc::Translation2d moduleForceFieldRef{units::meter_t{xForce[i].value()},
+                                           units::meter_t{yForce[i].value()}};
+    frc::Translation2d moduleForceRobotRef =
+        moduleForceFieldRef.RotateBy(GetPose().Rotation());
+    units::newton_meter_t totalTorqueAtMotor =
+        (units::newton_t{moduleForceRobotRef.Norm().value()} *
+         consts::swerve::PHY_CHAR.wheelRadius) /
+        consts::swerve::PHY_CHAR.driveGearing;
+    units::ampere_t expectedTorqueCurrent =
+        totalTorqueAtMotor / consts::swerve::PHY_CHAR.driveMotor.Kt;
+    retVal[i] = expectedTorqueCurrent;
+    forces[i].angle = moduleForceRobotRef.Angle();
+    forces[i].speed = units::feet_per_second_t{expectedTorqueCurrent.value()};
+  }
+  // forcesPub.Set(forces);
+
+  return retVal;
 }

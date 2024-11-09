@@ -17,19 +17,40 @@
 
 #include "constants/SwerveConstants.h"
 #include "frc/Alert.h"
+#include "frc/geometry/Pose2d.h"
+#include "frc/kinematics/SwerveModuleState.h"
 #include "str/swerve/SwerveModule.h"
+#include "units/angular_velocity.h"
+#include "units/current.h"
+#include "units/velocity.h"
 
 namespace str::swerve {
 class SwerveDrive {
  public:
   SwerveDrive();
+  frc::Pose2d GetPose() const;
+
+  void SetXModuleForces(const std::array<units::newton_t, 4>& xForce);
+  void SetYModuleForces(const std::array<units::newton_t, 4>& yForce);
   void UpdateOdom();
   void UpdateSimulation();
   void UpdateNTEntries();
+  void DriveFieldRelative(units::meters_per_second_t xVel,
+                          units::meters_per_second_t yVel,
+                          units::radians_per_second_t omega, bool openLoop);
+  void Drive(units::meters_per_second_t xVel, units::meters_per_second_t yVel,
+             units::radians_per_second_t omega, bool openLoop);
 
  private:
   void SetupSignals();
   void ConfigureImu();
+  void SetModuleStates(
+      const std::array<frc::SwerveModuleState, 4>& desiredStates, bool optimize,
+      bool openLoop,
+      const std::array<units::ampere_t, 4> moduleTorqueCurrentFF);
+  std::array<units::ampere_t, 4> ConvertModuleForcesToTorqueCurrent(
+      const std::array<units::newton_t, 4>& xForce,
+      const std::array<units::newton_t, 4>& yForce);
 
   std::array<SwerveModule, 4> modules{
       SwerveModule{consts::swerve::FL_MODULE, consts::swerve::PHY_CHAR,
@@ -52,6 +73,8 @@ class SwerveDrive {
   units::second_t lastOdomUpdateTime{0_s};
   units::hertz_t odomUpdateRate{0_Hz};
   frc::Rotation2d lastSimAngle;
+  std::array<units::newton_t, 4> xModuleForce{};
+  std::array<units::newton_t, 4> yModuleForce{};
 
   frc::SwerveDriveOdometry<4> odom{consts::swerve::KINEMATICS,
                                    frc::Rotation2d{0_deg}, modulePositions};
