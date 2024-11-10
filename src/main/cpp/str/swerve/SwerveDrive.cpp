@@ -12,6 +12,7 @@
 #include "frc/geometry/Pose2d.h"
 #include "frc/kinematics/ChassisSpeeds.h"
 #include "frc/kinematics/SwerveModuleState.h"
+#include <frc/DriverStation.h>
 
 using namespace str::swerve;
 
@@ -139,6 +140,24 @@ void SwerveDrive::ConfigureImu() {
   if (!imuConfigStatus.IsOK()) {
     imuConfigAlert.Set(true);
   }
+}
+
+void SwerveDrive::DriveFieldRelative(units::meters_per_second_t xVel,
+                                     units::meters_per_second_t yVel,
+                                     units::radians_per_second_t omega,
+                                     bool openLoop) {
+  frc::ChassisSpeeds speedsToSend{};
+
+  frc::Rotation2d rot = poseEstimator.GetEstimatedPosition().Rotation();
+
+  if (frc::DriverStation::IsTeleop()) {
+    rot = odom.GetPose().Rotation();
+  }
+
+  speedsToSend =
+      frc::ChassisSpeeds::FromFieldRelativeSpeeds(xVel, yVel, omega, rot);
+
+  Drive(speedsToSend.vx, speedsToSend.vx, speedsToSend.omega, openLoop);
 }
 
 void SwerveDrive::Drive(units::meters_per_second_t xVel,

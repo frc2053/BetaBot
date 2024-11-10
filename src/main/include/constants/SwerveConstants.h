@@ -76,4 +76,7 @@ inline constexpr std::array<frc::Translation2d, 4> MODULE_LOCATIONS{
 inline frc::SwerveDriveKinematics<4> KINEMATICS{
     MODULE_LOCATIONS[0], MODULE_LOCATIONS[1], MODULE_LOCATIONS[2],
     MODULE_LOCATIONS[3]};
+
+inline constexpr units::radians_per_second_t DRIVE_MAX_ROT_SPEED =
+    540_deg_per_s;
 }  // namespace consts::swerve

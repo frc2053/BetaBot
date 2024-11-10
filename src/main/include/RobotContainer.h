@@ -6,15 +6,19 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include "subsystems/Drive.h"
 
 class RobotContainer {
  public:
   RobotContainer();
 
   frc2::CommandPtr GetAutonomousCommand();
+  Drive& GetDrive();
 
  private:
   void ConfigureBindings();
 
   frc2::CommandXboxController driverJoystick{0};
+
+  Drive driveSub;
 };

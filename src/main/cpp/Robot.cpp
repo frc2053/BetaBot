@@ -21,14 +21,12 @@ Robot::Robot() {
   ctre::phoenix6::SignalLogger::Start();
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
-  AddPeriodic([this] { swerve.UpdateOdom(); },
+  AddPeriodic([this] { m_container.GetDrive().UpdateOdom(); },
               1 / consts::swerve::ODOM_UPDATE_RATE, 2_ms);
 }
 
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
-  swerve.UpdateSimulation();
-  swerve.UpdateNTEntries();
 }
 
 void Robot::DisabledInit() {}
