@@ -12,10 +12,10 @@
 #include "frc/Alert.h"
 #include "frc/geometry/Pose2d.h"
 #include "frc/geometry/Rotation2d.h"
-#include "frc/geometry/Transform3d.h"
 #include "frc/kinematics/ChassisSpeeds.h"
 #include "frc/kinematics/SwerveModuleState.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include "str/DriverstationUtils.h"
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angle.h"
 #include "units/angular_velocity.h"
@@ -26,7 +26,8 @@ using namespace str::swerve;
 
 SwerveDrive::SwerveDrive()
     : imuConfigAlert{imuConfigAlertStr, frc::Alert::AlertType::kError},
-      imuOptimizeAlert{imuOptimizeAlertStr, frc::Alert::AlertType::kError} {
+      imuOptimizeAlert{imuOptimizeAlertStr, frc::Alert::AlertType::kError},
+      imuZeroAlert(imuZeroAlertStr, frc::Alert::AlertType::kError) {
   ConfigureImu();
   SetupSignals();
   frc::SmartDashboard::PutData("SwerveField", &swerveField);
@@ -183,6 +184,23 @@ void SwerveDrive::ConfigureImu() {
 
 units::radian_t SwerveDrive::GetYawFromImu() const {
   return yawLatencyComped;
+}
+
+void SwerveDrive::ZeroYaw() {
+  units::radian_t targetAngle = 0_rad;
+  if (str::IsOnRed()) {
+    targetAngle = 180_deg;
+  } else {
+    targetAngle = 0_deg;
+  }
+  imuZeroAlert.Set(!imu.SetYaw(targetAngle).IsOK());
+}
+
+void SwerveDrive::ResetPose(const frc::Pose2d& resetPose) {
+  odom.ResetPosition(frc::Rotation2d{GetYawFromImu()}, modulePositions,
+                     resetPose);
+  poseEstimator.ResetPosition(frc::Rotation2d{GetYawFromImu()}, modulePositions,
+                              resetPose);
 }
 
 void SwerveDrive::DriveFieldRelative(units::meters_per_second_t xVel,

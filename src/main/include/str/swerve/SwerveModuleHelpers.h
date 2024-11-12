@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <frc/filter/SlewRateLimiter.h>
 #include <frc/system/plant/DCMotor.h>
 #include <str/GainTypes.h>
 #include <str/Units.h>
@@ -19,7 +20,6 @@
 
 #include "units/angular_velocity.h"
 #include "units/velocity.h"
-#include <frc/filter/SlewRateLimiter.h>
 
 namespace str::swerve {
 struct ModuleConstants {
@@ -92,7 +92,17 @@ struct SteerGains {
   str::gains::radial::turn_amp_ki_unit_t kI;
   str::gains::radial::turn_amp_kd_unit_t kD;
 
-  SteerGains() = delete;
+  SteerGains& operator=(const SteerGains& other) = default;
+  SteerGains(const SteerGains& other)
+      : motionMagicCruiseVel{other.motionMagicCruiseVel},
+        motionMagicExpoKa{other.motionMagicExpoKa},
+        motionMagicExpoKv{other.motionMagicExpoKv},
+        kA{other.kA},
+        kV{other.kV},
+        kS{other.kS},
+        kP{other.kP},
+        kI{other.kI},
+        kD{other.kD} {}
   SteerGains(units::turns_per_second_t mmCv,
              str::gains::radial::turn_volt_ka_unit_t mmKa,
              str::gains::radial::turn_volt_kv_unit_t mmKv,
@@ -136,6 +146,7 @@ struct DriveGains {
   str::gains::radial::turn_amp_ki_unit_t kI;
   str::gains::radial::turn_amp_kd_unit_t kD;
 
+  DriveGains& operator=(const DriveGains& other) = default;
   DriveGains(const DriveGains& other)
       : kA{other.kA},
         kV{other.kV},

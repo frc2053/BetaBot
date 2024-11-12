@@ -48,7 +48,8 @@ class SwerveDrive {
              units::radians_per_second_t omega, bool openLoop);
 
   units::radian_t GetYawFromImu() const;
-
+  void ZeroYaw();
+  void ResetPose(const frc::Pose2d& resetPose);
   str::swerve::SteerGains GetSteerGains() const;
   void SetSteerGains(str::swerve::SteerGains newGains);
   str::swerve::DriveGains GetDriveGains() const;
@@ -109,8 +110,11 @@ class SwerveDrive {
 
   static constexpr std::string_view imuConfigAlertStr = "Imu Configuration";
   static constexpr std::string_view imuOptimizeAlertStr = "Imu Optimization";
+  static constexpr std::string_view imuZeroAlertStr = "Imu Zeroing";
+
   frc::Alert imuConfigAlert;
   frc::Alert imuOptimizeAlert;
+  frc::Alert imuZeroAlert;
 
   frc::Field2d swerveField{};
   std::shared_ptr<nt::NetworkTable> nt{
