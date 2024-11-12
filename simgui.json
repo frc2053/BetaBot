@@ -1,10 +1,18 @@
 {
   "HALProvider": {
     "Other Devices": {
-      " Talon FX (v6)[3]": {
+      " Talon FX (v6)[2]": {
         "header": {
           "open": true
         }
+      }
+    },
+    "RoboRIO": {
+      "RoboRIO Input": {
+        "open": true
+      },
+      "window": {
+        "visible": true
       }
     }
   },
@@ -15,7 +23,11 @@
       "/SmartDashboard/Module 1": "Mechanism2d",
       "/SmartDashboard/Module 2": "Mechanism2d",
       "/SmartDashboard/Module 3": "Mechanism2d",
-      "/SmartDashboard/SwerveField": "Field2d"
+      "/SmartDashboard/SwerveField": "Field2d",
+      "/SmartDashboard/VisionSystemSim-str_bl_cam/Sim Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-str_br_cam/Sim Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-str_fl_cam/Sim Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-str_fr_cam/Sim Field": "Field2d"
     },
     "windows": {
       "/SmartDashboard/SwerveField": {

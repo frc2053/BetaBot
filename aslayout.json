@@ -164,7 +164,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "Crab Bot"
+                      "model": "LynkClone"
                     }
                   },
                   {
@@ -243,7 +243,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "Crab Bot",
+                      "model": "LynkClone",
                       "color": "#0000ff"
                     }
                   },
@@ -253,7 +253,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "Crab Bot",
+                      "model": "LynkClone",
                       "color": "#00ff00"
                     }
                   },
@@ -270,7 +270,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "Crab Bot",
+                      "model": "LynkClone",
                       "color": "#ff0000"
                     }
                   },
@@ -280,7 +280,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "Crab Bot",
+                      "model": "LynkClone",
                       "color": "#ff8c00"
                     }
                   },
@@ -290,7 +290,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "Crab Bot",
+                      "model": "LynkClone",
                       "color": "#00ffff"
                     }
                   },
@@ -300,7 +300,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "Crab Bot",
+                      "model": "LynkClone",
                       "color": "#ffff00"
                     }
                   }
@@ -313,17 +313,17 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  2.293574925668202,
-                  2.1071062567321013,
-                  3.4533555903128077
+                  10.37608674425006,
+                  5.14018959610576,
+                  0.16767350540132944
                 ],
                 "cameraTarget": [
-                  5.4215286608684865,
-                  1.0209803434297497,
-                  2.0276851647304728
+                  5.574306668907712,
+                  0.26632949711303977,
+                  -0.03370745348536627
                 ]
               },
-              "controlsHeight": 702
+              "controlsHeight": 441
             },
             {
               "type": 8,
@@ -384,9 +384,9 @@
                     }
                   }
                 ],
-                "maxSpeed": 5,
-                "sizeX": 0.65,
-                "sizeY": 0.65,
+                "maxSpeed": 6.00456,
+                "sizeX": 0.40005,
+                "sizeY": 0.55245,
                 "orientation": 1
               },
               "controllerUUID": "bt9ftgdxdwv6tw7rc580fys90shxu0oh",
