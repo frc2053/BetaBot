@@ -11,22 +11,22 @@
     "windows": {
       "/SmartDashboard/SwerveField": {
         "BL Pos": {
-          "image": "swerve_module.png",
+          "image": "img/swerve_module.png",
           "length": 0.20000000298023224,
           "width": 0.20000000298023224
         },
         "BR Pos": {
-          "image": "swerve_module.png",
+          "image": "img/swerve_module.png",
           "length": 0.20000000298023224,
           "width": 0.20000000298023224
         },
         "FL Pos": {
-          "image": "swerve_module.png",
+          "image": "img/swerve_module.png",
           "length": 0.20000000298023224,
           "width": 0.20000000298023224
         },
         "FR Pos": {
-          "image": "swerve_module.png",
+          "image": "img/swerve_module.png",
           "length": 0.20000000298023224,
           "width": 0.20000000298023224
         },
