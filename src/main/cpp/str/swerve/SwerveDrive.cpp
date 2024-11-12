@@ -16,6 +16,7 @@
 #include "frc/kinematics/SwerveModuleState.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "str/DriverstationUtils.h"
+#include "str/Math.h"
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angle.h"
 #include "units/angular_velocity.h"
@@ -35,6 +36,10 @@ SwerveDrive::SwerveDrive()
 
 frc::Pose2d SwerveDrive::GetPose() const {
   return poseEstimator.GetEstimatedPosition();
+}
+
+frc::Pose2d SwerveDrive::GetOdomPose() const {
+  return odom.GetPose();
 }
 
 void SwerveDrive::SetXModuleForces(
@@ -73,6 +78,21 @@ void SwerveDrive::UpdateOdom() {
   units::second_t now = frc::Timer::GetFPGATimestamp();
   odomUpdateRate = 1.0 / (now - lastOdomUpdateTime);
   lastOdomUpdateTime = now;
+}
+
+void SwerveDrive::AddVisionMeasurement(const frc::Pose2d& measurement,
+                                       units::second_t timestamp,
+                                       const Eigen::Vector3d& stdDevs) {
+  if (str::math::IsRobotInsideField(consts::swerve::physical::TOTAL_LENGTH,
+                                    consts::swerve::physical::TOTAL_WIDTH,
+                                    measurement)) {
+    wpi::array<double, 3> newStdDevs{stdDevs(0), stdDevs(1), stdDevs(2)};
+    addedVisionPosesPub.Set(measurement);
+    poseEstimator.AddVisionMeasurement(measurement, timestamp, newStdDevs);
+  } else {
+    frc::DataLogManager::Log(
+        "WARNING: Vision pose was outside of field! Not adding to estimator!");
+  }
 }
 
 void SwerveDrive::UpdateSimulation() {

@@ -35,7 +35,7 @@
             "title": "SwerveField",
             "x": 640.0,
             "y": 0.0,
-            "width": 896.0,
+            "width": 768.0,
             "height": 640.0,
             "type": "Field",
             "properties": {
@@ -82,6 +82,54 @@
               "time_display_mode": "Minutes and Seconds",
               "red_start_time": 15,
               "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "str_bl_cam-processed",
+            "x": 1408.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/str_bl_cam-processed",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "str_br_cam-processed",
+            "x": 1664.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/str_br_cam-processed",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "str_fl_cam-processed",
+            "x": 1408.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/str_fl_cam-processed",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "str_fr_cam-processed",
+            "x": 1664.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/str_fr_cam-processed",
+              "period": 0.06
             }
           }
         ]

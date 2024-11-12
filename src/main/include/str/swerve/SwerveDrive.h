@@ -35,12 +35,16 @@ class SwerveDrive {
  public:
   SwerveDrive();
   frc::Pose2d GetPose() const;
+  frc::Pose2d GetOdomPose() const;
 
   void SetXModuleForces(const std::array<units::newton_t, 4>& xForce);
   void SetYModuleForces(const std::array<units::newton_t, 4>& yForce);
   void UpdateOdom();
   void UpdateSimulation();
   void UpdateNTEntries();
+  void AddVisionMeasurement(const frc::Pose2d& measurement,
+                            units::second_t timestamp,
+                            const Eigen::Vector3d& stdDevs);
   void DriveFieldRelative(units::meters_per_second_t xVel,
                           units::meters_per_second_t yVel,
                           units::radians_per_second_t omega, bool openLoop);
@@ -137,6 +141,8 @@ class SwerveDrive {
           .Publish()};
   nt::StructPublisher<frc::Pose2d> odomPosePub{
       nt->GetStructTopic<frc::Pose2d>("OdometryPose").Publish()};
+  nt::StructPublisher<frc::Pose2d> addedVisionPosesPub{
+      nt->GetStructTopic<frc::Pose2d>("AddedVisionPoses").Publish()};
   nt::StructPublisher<frc::Pose2d> estimatorPub{
       nt->GetStructTopic<frc::Pose2d>("PoseEstimatorPose").Publish()};
   nt::DoublePublisher odomUpdateRatePub{

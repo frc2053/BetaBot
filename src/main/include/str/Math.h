@@ -11,8 +11,8 @@
 namespace str::math {
 static bool IsPointInsideField(const frc::Translation2d& point) {
   return point.X() >= 0_m && point.Y() >= 0_m &&
-         point.X() <= consts::yearspecific::tagLayout.GetFieldLength() &&
-         point.Y() <= consts::yearspecific::tagLayout.GetFieldWidth();
+         point.X() <= consts::yearspecific::TAG_LAYOUT.GetFieldLength() &&
+         point.Y() <= consts::yearspecific::TAG_LAYOUT.GetFieldWidth();
 }
 
 static bool IsRobotInsideField(units::meter_t robotTotalWidth,

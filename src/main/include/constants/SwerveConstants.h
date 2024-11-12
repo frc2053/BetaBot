@@ -71,6 +71,19 @@ inline frc::SwerveDriveKinematics<4> KINEMATICS{
     MODULE_LOCATIONS[0], MODULE_LOCATIONS[1], MODULE_LOCATIONS[2],
     MODULE_LOCATIONS[3]};
 
+// Total outside frame size
+inline constexpr units::meter_t DRIVEBASE_WIDTH = 27.440000_in;
+inline constexpr units::meter_t DRIVEBASE_LENGTH = 27_in;
+
+// 3/4 in plywood + 2.5 in diameter pool noodles + 1/8 slop
+inline constexpr units::meter_t BUMPER_THICKNESS = .75_in + 2.5_in + .125_in;
+
+// Total size including bumpers
+inline constexpr units::meter_t TOTAL_WIDTH =
+    DRIVEBASE_WIDTH + (2 * BUMPER_THICKNESS);
+inline constexpr units::meter_t TOTAL_LENGTH =
+    DRIVEBASE_LENGTH + (2 * BUMPER_THICKNESS);
+
 inline constexpr units::degree_t IMU_MOUNT_ROLL = 0_deg;
 inline constexpr units::degree_t IMU_MOUNT_PITCH = 0_deg;
 inline constexpr units::degree_t IMU_MOUNT_YAW = 0_deg;

@@ -30,10 +30,36 @@ void Robot::RobotPeriodic() {
   loopTimePub.Set((1 / loopTime).value());
 
   frc2::CommandScheduler::GetInstance().Run();
+  UpdateVision();
 
   lastTotalLoopTime = now;
   matchTimePub.Set(frc::DriverStation::GetMatchTime().value());
   battVoltagePub.Set(frc::RobotController::GetBatteryVoltage().value());
+}
+
+void Robot::SimulationPeriodic() {
+  m_container.GetVision().SimulationPeriodic(
+      m_container.GetDrive().GetOdomPose());
+}
+
+void Robot::UpdateVision() {
+  auto visionEstimates = m_container.GetVision().GetCameraEstimatedPoses(
+      frc::Pose3d{m_container.GetDrive().GetRobotPose()});
+  auto stdDevs = m_container.GetVision().GetPoseStdDevs(visionEstimates);
+
+  frc::Pose3d pose = frc::Pose3d{m_container.GetDrive().GetRobotPose()};
+
+  m_container.GetVision().UpdateCameraPositionVis(pose);
+
+  int i = 0;
+  for (const auto& est : visionEstimates) {
+    if (est.has_value()) {
+      m_container.GetDrive().AddVisionMeasurement(
+          est.value().estimatedPose.ToPose2d(), est.value().timestamp,
+          stdDevs[i].value());
+    }
+    i++;
+  }
 }
 
 void Robot::DisabledInit() {}

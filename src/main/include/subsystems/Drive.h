@@ -11,10 +11,12 @@
 
 #include "ctre/phoenix6/SignalLogger.hpp"
 #include "frc/DataLogManager.h"
+#include "frc/geometry/Pose2d.h"
 #include "str/swerve/SwerveDrive.h"
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angular_velocity.h"
 #include "units/current.h"
+#include "units/time.h"
 #include "units/velocity.h"
 #include "wpi/DataLog.h"
 #include "wpi/timestamp.h"
@@ -25,6 +27,11 @@ class Drive : public frc2::SubsystemBase {
   void Periodic() override;
   void SimulationPeriodic() override;
   void UpdateOdom();
+  frc::Pose2d GetRobotPose() const;
+  frc::Pose2d GetOdomPose() const;
+  void AddVisionMeasurement(const frc::Pose2d& measurement,
+                            units::second_t timestamp,
+                            const Eigen::Vector3d& stdDevs);
 
   frc2::CommandPtr DriveTeleop(
       std::function<units::meters_per_second_t()> xVel,

@@ -10,6 +10,7 @@
 #include "constants/SwerveConstants.h"
 #include "frc2/command/sysid/SysIdRoutine.h"
 #include "str/DriverstationUtils.h"
+#include "str/vision/VisionSystem.h"
 #include "subsystems/Drive.h"
 
 RobotContainer::RobotContainer() {
@@ -124,4 +125,8 @@ frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
 
 Drive& RobotContainer::GetDrive() {
   return driveSub;
+}
+
+str::vision::VisionSystem& RobotContainer::GetVision() {
+  return vision;
 }

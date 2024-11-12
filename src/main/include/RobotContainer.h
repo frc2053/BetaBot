@@ -11,6 +11,7 @@
 #include <functional>
 #include <memory>
 
+#include "str/vision/VisionSystem.h"
 #include "subsystems/Drive.h"
 
 class RobotContainer {
@@ -19,6 +20,7 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
   Drive& GetDrive();
+  str::vision::VisionSystem& GetVision();
 
  private:
   void ConfigureBindings();
@@ -34,6 +36,7 @@ class RobotContainer {
   frc2::CommandXboxController driverJoystick{0};
 
   Drive driveSub;
+  str::vision::VisionSystem vision;
 
   std::shared_ptr<nt::NetworkTable> tuningTable{
       nt::NetworkTableInstance::GetDefault().GetTable("Tuning")};

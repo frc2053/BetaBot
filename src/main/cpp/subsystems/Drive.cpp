@@ -10,6 +10,7 @@
 
 #include "constants/SwerveConstants.h"
 #include "frc/MathUtil.h"
+#include "frc/geometry/Pose2d.h"
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
 #include "str/swerve/SwerveModuleHelpers.h"
@@ -26,6 +27,20 @@ void Drive::SimulationPeriodic() {
 
 void Drive::UpdateOdom() {
   swerveDrive.UpdateOdom();
+}
+
+frc::Pose2d Drive::GetRobotPose() const {
+  return swerveDrive.GetPose();
+}
+
+frc::Pose2d Drive::GetOdomPose() const {
+  return swerveDrive.GetOdomPose();
+}
+
+void Drive::AddVisionMeasurement(const frc::Pose2d& measurement,
+                                 units::second_t timestamp,
+                                 const Eigen::Vector3d& stdDevs) {
+  swerveDrive.AddVisionMeasurement(measurement, timestamp, stdDevs);
 }
 
 frc2::CommandPtr Drive::DriveTeleop(
