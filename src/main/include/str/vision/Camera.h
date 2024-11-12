@@ -29,7 +29,6 @@ class Camera {
          Eigen::Matrix<double, 3, 1> singleTagStdDev,
          Eigen::Matrix<double, 3, 1> multiTagDevs, bool simulate);
   void SimPeriodic(frc::Pose2d robotSimPose);
-  photon::PhotonPipelineResult GetLatestResult();
   std::optional<photon::EstimatedRobotPose> GetEstimatedGlobalPose(
       frc::Pose3d robotPose);
   Eigen::Matrix<double, 3, 1> GetEstimationStdDevs(frc::Pose2d estimatedPose);

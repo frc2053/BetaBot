@@ -133,44 +133,41 @@ std::optional<units::radian_t> Camera::GetAngleToNote() {
   return angleToNote;
 }
 
-photon::PhotonPipelineResult Camera::GetLatestResult() {
-  return latestResult;
-}
-
 std::optional<photon::EstimatedRobotPose> Camera::GetEstimatedGlobalPose(
     frc::Pose3d robotPose) {
   std::optional<photon::EstimatedRobotPose> visionEst;
 
-  auto result = camera->GetLatestResult();
-  visionEst = photonEstimator->Update(result);
+  auto allUnread = camera->GetAllUnreadResults();
 
-  if (visionEst.has_value()) {
-    posePub.Set(visionEst.value().estimatedPose.ToPose2d());
-  } else {
-    posePub.Set({});
-  }
+  for (const auto& result : allUnread) {
+    visionEst = photonEstimator->Update(result);
 
-  latestResult = result;
-
-  const auto& targetsSpan = result.GetTargets();
-  targetsCopy = std::vector<photon::PhotonTrackedTarget>(targetsSpan.begin(),
-                                                         targetsSpan.end());
-
-  std::vector<frc::Pose3d> targetPoses;
-  std::vector<frc::Translation2d> cornerPxs;
-  for (const auto& target : targetsCopy) {
-    targetPoses.emplace_back(
-        robotPose.TransformBy(photonEstimator->GetRobotToCameraTransform())
-            .TransformBy(target.bestCameraToTarget));
-    for (const auto& corner : target.GetDetectedCorners()) {
-      // YEAH I KNOW ITS NOT A METER ITS PIXELS BUT ASCOPE NEEDS A TRANSLATION
-      // TYPE
-      cornerPxs.emplace_back(frc::Translation2d{units::meter_t{corner.x},
-                                                units::meter_t{corner.y}});
+    if (visionEst.has_value()) {
+      posePub.Set(visionEst.value().estimatedPose.ToPose2d());
+    } else {
+      posePub.Set({});
     }
+
+    const auto& targetsSpan = result.GetTargets();
+    targetsCopy = std::vector<photon::PhotonTrackedTarget>(targetsSpan.begin(),
+                                                           targetsSpan.end());
+
+    std::vector<frc::Pose3d> targetPoses;
+    std::vector<frc::Translation2d> cornerPxs;
+    for (const auto& target : targetsCopy) {
+      targetPoses.emplace_back(
+          robotPose.TransformBy(photonEstimator->GetRobotToCameraTransform())
+              .TransformBy(target.bestCameraToTarget));
+      for (const auto& corner : target.GetDetectedCorners()) {
+        // YEAH I KNOW ITS NOT A METER ITS PIXELS BUT ASCOPE NEEDS A TRANSLATION
+        // TYPE
+        cornerPxs.emplace_back(frc::Translation2d{units::meter_t{corner.x},
+                                                  units::meter_t{corner.y}});
+      }
+    }
+    targetPosesPub.Set(targetPoses);
+    cornersPub.Set(cornerPxs);
   }
-  targetPosesPub.Set(targetPoses);
-  cornersPub.Set(cornerPxs);
 
   return visionEst;
 }
