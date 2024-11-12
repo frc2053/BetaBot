@@ -26,6 +26,7 @@
 #include "units/angular_velocity.h"
 #include "units/current.h"
 #include "units/velocity.h"
+#include <frc/sysid/SysIdRoutineLog.h>
 
 namespace str::swerve {
 class SwerveDrive {
@@ -44,13 +45,23 @@ class SwerveDrive {
   void Drive(units::meters_per_second_t xVel, units::meters_per_second_t yVel,
              units::radians_per_second_t omega, bool openLoop);
 
- private:
-  void SetupSignals();
-  void ConfigureImu();
+  str::swerve::SteerGains GetSteerGains() const;
+  void SetSteerGains(str::swerve::SteerGains newGains);
+  str::swerve::DriveGains GetDriveGains() const;
+  void SetDriveGains(str::swerve::DriveGains newGains);
+
+  void SetCharacterizationVoltageSteer(units::volt_t volts);
+  void SetCharacterizationVoltageDrive(units::volt_t volts);
+  void LogSteerVoltage(frc::sysid::SysIdRoutineLog* log);
+  void LogDriveVoltage(frc::sysid::SysIdRoutineLog* log);
   void SetModuleStates(
       const std::array<frc::SwerveModuleState, 4>& desiredStates, bool optimize,
       bool openLoop,
       const std::array<units::ampere_t, 4> moduleTorqueCurrentFF);
+
+ private:
+  void SetupSignals();
+  void ConfigureImu();
   std::array<units::ampere_t, 4> ConvertModuleForcesToTorqueCurrent(
       const std::array<units::newton_t, 4>& xForce,
       const std::array<units::newton_t, 4>& yForce);

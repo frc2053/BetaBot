@@ -15,6 +15,14 @@ RobotContainer::RobotContainer() {
 }
 
 void RobotContainer::ConfigureBindings() {
+  tuningTable->PutBoolean("SteerPidTuning", false);
+  tuningTable->PutBoolean("DrivePidTuning", false);
+
+  steerTuneBtn.OnTrue(
+      driveSub.TuneSteerPID([this] { return !steerTuneBtn.Get(); }));
+  driveTuneBtn.OnTrue(
+      driveSub.TuneDrivePID([this] { return !driveTuneBtn.Get(); }));
+
   driveSub.SetDefaultCommand(driveSub.DriveTeleop(
       [this] {
         return str::NegateIfRed(

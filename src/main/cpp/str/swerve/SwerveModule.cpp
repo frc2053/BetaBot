@@ -85,10 +85,13 @@ frc::SwerveModuleState SwerveModule::GoToState(frc::SwerveModuleState desired,
   motorSpeed += driveBackout;
 
   if (openLoop) {
-    driveMotor.SetControl(driveVoltageSetter.WithOutput(
-        (motorSpeed / ConvertWheelVelToMotorVel(ConvertLinearVelToWheelVel(
-                          physicalChar.MaxLinearSpeed()))) *
-        12_V));
+    driveMotor.SetControl(
+        driveVoltageSetter
+            .WithOutput((motorSpeed /
+                         ConvertWheelVelToMotorVel(ConvertLinearVelToWheelVel(
+                             physicalChar.MaxLinearSpeed()))) *
+                        12_V)
+            .WithEnableFOC(true));
   } else {
     driveMotor.SetControl(
         driveVelocitySetter.WithVelocity(motorSpeed)
@@ -135,9 +138,94 @@ frc::SwerveModuleState SwerveModule::GetState() {
   return currentState;
 }
 
+units::radian_t SwerveModule::GetOutputShaftTurns() {
+  ctre::phoenix::StatusCode moduleSignalStatus =
+      ctre::phoenix6::BaseStatusSignal::WaitForAll(0_s, drivePositionSig,
+                                                   driveVelocitySig);
+
+  if (!moduleSignalStatus.IsOK()) {
+    frc::DataLogManager::Log(fmt::format(
+        "Error refreshing {} module signal in GetDriveMotorTurns()! "
+        "Error was: {}\n",
+        moduleNamePrefix, moduleSignalStatus.GetName()));
+  }
+
+  units::radian_t latencyCompDrivePos =
+      ctre::phoenix6::BaseStatusSignal::GetLatencyCompensatedValue(
+          drivePositionSig, driveVelocitySig);
+
+  return ConvertDriveMotorRotationsToWheelRotations(latencyCompDrivePos);
+}
+
 frc::SwerveModuleState SwerveModule::UpdateSimulatedModule(
     units::volt_t batteryVoltage) {
   return moduleSim.Update(batteryVoltage);
+}
+
+void SwerveModule::SetSteerGains(str::swerve::SteerGains newGains) {
+  steerGains = newGains;
+  ctre::phoenix6::configs::Slot0Configs steerSlotConfig{};
+  steerSlotConfig.kV = steerGains.kV.value();
+  steerSlotConfig.kA = steerGains.kA.value();
+  steerSlotConfig.kS = steerGains.kS.value();
+  steerSlotConfig.kP = steerGains.kP.value();
+  steerSlotConfig.kI = steerGains.kI.value();
+  steerSlotConfig.kD = steerGains.kD.value();
+
+  ctre::phoenix6::configs::MotionMagicConfigs steerMMConfig{};
+
+  steerMMConfig.MotionMagicCruiseVelocity = steerGains.motionMagicCruiseVel;
+  steerMMConfig.MotionMagicExpo_kV = steerGains.motionMagicExpoKv;
+  steerMMConfig.MotionMagicExpo_kA = steerGains.motionMagicExpoKa;
+
+  ctre::phoenix::StatusCode statusGains =
+      steerMotor.GetConfigurator().Apply(steerSlotConfig);
+  if (!statusGains.IsOK()) {
+    frc::DataLogManager::Log(
+        fmt::format("Swerve Steer Motor was unable to set new gains! "
+                    "Error: {}, More Info: {}",
+                    statusGains.GetName(), statusGains.GetDescription()));
+  }
+
+  ctre::phoenix::StatusCode statusMM =
+      steerMotor.GetConfigurator().Apply(steerMMConfig);
+  if (!statusMM.IsOK()) {
+    frc::DataLogManager::Log(fmt::format(
+        "{} Swerve Steer Motor was unable to set new motion magic config! "
+        "Error: {}, More Info: {}",
+        moduleNamePrefix, statusMM.GetName(), statusMM.GetDescription()));
+  }
+}
+
+void SwerveModule::SetDriveGains(str::swerve::DriveGains newGains) {
+  driveGains = newGains;
+  ctre::phoenix6::configs::Slot0Configs driveSlotConfig{};
+  driveSlotConfig.kV = driveGains.kV.value();
+  driveSlotConfig.kA = driveGains.kA.value();
+  driveSlotConfig.kS = driveGains.kS.value();
+  driveSlotConfig.kP = driveGains.kP.value();
+  driveSlotConfig.kI = driveGains.kI.value();
+  driveSlotConfig.kD = driveGains.kD.value();
+  ctre::phoenix::StatusCode status =
+      driveMotor.GetConfigurator().Apply(driveSlotConfig);
+  if (!status.IsOK()) {
+    frc::DataLogManager::Log(fmt::format(
+        "{} Swerve Drive Motor was unable to set new gains! "
+        "Error: {}, More Info: {}",
+        moduleNamePrefix, status.GetName(), status.GetDescription()));
+  }
+}
+
+str::swerve::SteerGains SwerveModule::GetSteerGains() const {
+  return steerGains;
+}
+
+str::swerve::DriveGains SwerveModule::GetDriveGains() const {
+  return driveGains;
+}
+
+units::ampere_t SwerveModule::GetSimulatedCurrentDraw() const {
+  return moduleSim.GetDriveCurrentDraw() + moduleSim.GetSteerCurrentDraw();
 }
 
 void SwerveModule::ConfigureSteerEncoder(units::turn_t encoderOffset) {
@@ -261,6 +349,15 @@ void SwerveModule::ConfigureDriveMotor(bool invert, units::ampere_t supplyLim,
                   moduleNamePrefix, configResult.GetName()));
 
   configureDriveAlert.Set(!configResult.IsOK());
+}
+
+void SwerveModule::SetSteerToVoltage(units::volt_t voltsToSend) {
+  steerMotor.SetControl(
+      steerVoltageSetter.WithOutput(voltsToSend).WithEnableFOC(true));
+}
+void SwerveModule::SetDriveToVoltage(units::volt_t voltsToSend) {
+  driveMotor.SetControl(
+      driveVoltageSetter.WithOutput(voltsToSend).WithEnableFOC(true));
 }
 
 void SwerveModule::ConfigureControlSignals() {

@@ -21,6 +21,7 @@
 #include "units/current.h"
 #include "units/dimensionless.h"
 #include "units/velocity.h"
+#include "units/voltage.h"
 
 namespace str::swerve {
 
@@ -36,7 +37,15 @@ class SwerveModule {
   std::array<ctre::phoenix6::BaseStatusSignal*, 8> GetSignals();
   frc::SwerveModulePosition GetPosition();
   frc::SwerveModuleState GetState();
+  units::radian_t GetOutputShaftTurns();
   frc::SwerveModuleState UpdateSimulatedModule(units::volt_t batteryVoltage);
+  void SetSteerGains(str::swerve::SteerGains newGains);
+  void SetDriveGains(str::swerve::DriveGains newGains);
+  str::swerve::SteerGains GetSteerGains() const;
+  str::swerve::DriveGains GetDriveGains() const;
+  units::ampere_t GetSimulatedCurrentDraw() const;
+  void SetSteerToVoltage(units::volt_t voltsToSend);
+  void SetDriveToVoltage(units::volt_t voltsToSend);
 
  private:
   void ConfigureSteerEncoder(units::turn_t encoderOffset);

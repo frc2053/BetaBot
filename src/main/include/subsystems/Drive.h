@@ -23,6 +23,9 @@ class Drive : public frc2::SubsystemBase {
       std::function<units::meters_per_second_t()> yVel,
       std::function<units::radians_per_second_t()> omega);
 
+  frc2::CommandPtr TuneSteerPID(std::function<bool()> isDone);
+  frc2::CommandPtr TuneDrivePID(std::function<bool()> isDone);
+
  private:
   str::swerve::SwerveDrive swerveDrive{};
 };

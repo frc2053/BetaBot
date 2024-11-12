@@ -7,6 +7,7 @@
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include "subsystems/Drive.h"
+#include <frc2/command/button/NetworkButton.h>
 
 class RobotContainer {
  public:
@@ -21,4 +22,9 @@ class RobotContainer {
   frc2::CommandXboxController driverJoystick{0};
 
   Drive driveSub;
+
+  std::shared_ptr<nt::NetworkTable> tuningTable{
+      nt::NetworkTableInstance::GetDefault().GetTable("Tuning")};
+  frc2::NetworkButton steerTuneBtn{tuningTable, "SteerPidTuning"};
+  frc2::NetworkButton driveTuneBtn{tuningTable, "DrivePidTuning"};
 };

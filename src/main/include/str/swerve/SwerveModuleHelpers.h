@@ -81,15 +81,15 @@ struct ModulePhysicalCharacteristics {
 };
 
 struct SteerGains {
-  const units::turns_per_second_t motionMagicCruiseVel;
-  const str::gains::radial::turn_volt_ka_unit_t motionMagicExpoKa;
-  const str::gains::radial::turn_volt_kv_unit_t motionMagicExpoKv;
-  const str::gains::radial::turn_amp_ka_unit_t kA;
-  const str::gains::radial::turn_amp_kv_unit_t kV;
-  const units::ampere_t kS;
-  const str::gains::radial::turn_amp_kp_unit_t kP;
-  const str::gains::radial::turn_amp_ki_unit_t kI;
-  const str::gains::radial::turn_amp_kd_unit_t kD;
+  units::turns_per_second_t motionMagicCruiseVel;
+  str::gains::radial::turn_volt_ka_unit_t motionMagicExpoKa;
+  str::gains::radial::turn_volt_kv_unit_t motionMagicExpoKv;
+  str::gains::radial::turn_amp_ka_unit_t kA;
+  str::gains::radial::turn_amp_kv_unit_t kV;
+  units::ampere_t kS;
+  str::gains::radial::turn_amp_kp_unit_t kP;
+  str::gains::radial::turn_amp_ki_unit_t kI;
+  str::gains::radial::turn_amp_kd_unit_t kD;
 
   SteerGains() = delete;
   SteerGains(units::turns_per_second_t mmCv,
@@ -128,14 +128,20 @@ struct SteerGains {
 };
 
 struct DriveGains {
-  const str::gains::radial::turn_amp_ka_unit_t kA;
-  const str::gains::radial::turn_amp_kv_unit_t kV;
-  const units::ampere_t kS;
-  const str::gains::radial::turn_amp_kp_unit_t kP;
-  const str::gains::radial::turn_amp_ki_unit_t kI;
-  const str::gains::radial::turn_amp_kd_unit_t kD;
+  str::gains::radial::turn_amp_ka_unit_t kA;
+  str::gains::radial::turn_amp_kv_unit_t kV;
+  units::ampere_t kS;
+  str::gains::radial::turn_amp_kp_unit_t kP;
+  str::gains::radial::turn_amp_ki_unit_t kI;
+  str::gains::radial::turn_amp_kd_unit_t kD;
 
-  DriveGains() = delete;
+  DriveGains(const DriveGains& other)
+      : kA{other.kA},
+        kV{other.kV},
+        kS{other.kS},
+        kP{other.kP},
+        kI{other.kI},
+        kD{other.kD} {}
   DriveGains(str::gains::radial::turn_amp_ka_unit_t ka,
              str::gains::radial::turn_amp_kv_unit_t kv, units::ampere_t ks,
              str::gains::radial::turn_amp_kp_unit_t kp,

@@ -12,6 +12,7 @@
 #include "frc/geometry/Pose2d.h"
 #include "frc/kinematics/ChassisSpeeds.h"
 #include "frc/kinematics/SwerveModuleState.h"
+#include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angle.h"
 #include "units/angular_velocity.h"
 #include <frc/DriverStation.h>
@@ -239,4 +240,49 @@ std::array<units::ampere_t, 4> SwerveDrive::ConvertModuleForcesToTorqueCurrent(
   forcesPub.Set(forces);
 
   return retVal;
+}
+
+SteerGains SwerveDrive::GetSteerGains() const {
+  return modules[0].GetSteerGains();
+}
+
+void SwerveDrive::SetSteerGains(SteerGains newGains) {
+  for (int i = 0; i < 4; i++) {
+    modules[i].SetSteerGains(newGains);
+  }
+}
+
+DriveGains SwerveDrive::GetDriveGains() const {
+  return modules[0].GetDriveGains();
+}
+
+void SwerveDrive::SetDriveGains(DriveGains newGains) {
+  for (int i = 0; i < 4; i++) {
+    modules[i].SetDriveGains(newGains);
+  }
+}
+
+void SwerveDrive::SetCharacterizationVoltageSteer(units::volt_t volts) {
+  modules[0].SetSteerToVoltage(volts);
+}
+
+void SwerveDrive::SetCharacterizationVoltageDrive(units::volt_t volts) {
+  modules[0].SetDriveToVoltage(volts);
+  modules[1].SetDriveToVoltage(volts);
+  modules[2].SetDriveToVoltage(volts);
+  modules[3].SetDriveToVoltage(volts);
+}
+
+void SwerveDrive::LogSteerVoltage(frc::sysid::SysIdRoutineLog* log) {
+  log->Motor("swerve-steer")
+      .voltage(units::volt_t{allSignals[7]->GetValueAsDouble()})
+      .position(units::turn_t{allSignals[2]->GetValueAsDouble()})
+      .velocity(units::turns_per_second_t{allSignals[3]->GetValueAsDouble()});
+}
+
+void SwerveDrive::LogDriveVoltage(frc::sysid::SysIdRoutineLog* log) {
+  log->Motor("swerve-drive")
+      .voltage(units::volt_t{allSignals[6]->GetValueAsDouble()})
+      .position(units::turn_t{allSignals[0]->GetValueAsDouble()})
+      .velocity(units::turns_per_second_t{allSignals[1]->GetValueAsDouble()});
 }
