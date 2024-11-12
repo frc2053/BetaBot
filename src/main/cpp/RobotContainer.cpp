@@ -14,9 +14,28 @@
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
+  ConfigureSysIdBinds();
 }
 
 void RobotContainer::ConfigureBindings() {
+  driveSub.SetDefaultCommand(driveSub.DriveTeleop(
+      [this] {
+        return str::NegateIfRed(
+            frc::ApplyDeadband<double>(-driverJoystick.GetLeftY(), .1) *
+            consts::swerve::physical::PHY_CHAR.MaxLinearSpeed());
+      },
+      [this] {
+        return str::NegateIfRed(
+            frc::ApplyDeadband<double>(-driverJoystick.GetLeftX(), .1) *
+            consts::swerve::physical::PHY_CHAR.MaxLinearSpeed());
+      },
+      [this] {
+        return frc::ApplyDeadband<double>(-driverJoystick.GetRightX(), .1) *
+               consts::swerve::physical::MAX_ROT_SPEED;
+      }));
+}
+
+void RobotContainer::ConfigureSysIdBinds() {
   tuningTable->PutBoolean("SteerPidTuning", false);
   tuningTable->PutBoolean("DrivePidTuning", false);
   tuningTable->PutBoolean("SteerSysIdVolts", false);
@@ -39,22 +58,6 @@ void RobotContainer::ConfigureBindings() {
   driveSysIdBtn.WhileTrue(DriveSysIdCommands(
       [this] { return tuningTable->GetBoolean("Forward", true); },
       [this] { return tuningTable->GetBoolean("Quasistatic", true); }));
-
-  driveSub.SetDefaultCommand(driveSub.DriveTeleop(
-      [this] {
-        return str::NegateIfRed(
-            frc::ApplyDeadband<double>(-driverJoystick.GetLeftY(), .1) *
-            consts::swerve::physical::PHY_CHAR.MaxLinearSpeed());
-      },
-      [this] {
-        return str::NegateIfRed(
-            frc::ApplyDeadband<double>(-driverJoystick.GetLeftX(), .1) *
-            consts::swerve::physical::PHY_CHAR.MaxLinearSpeed());
-      },
-      [this] {
-        return frc::ApplyDeadband<double>(-driverJoystick.GetRightX(), .1) *
-               consts::swerve::physical::MAX_ROT_SPEED;
-      }));
 }
 
 frc2::CommandPtr RobotContainer::SteerVoltsSysIdCommands(

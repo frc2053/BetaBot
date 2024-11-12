@@ -22,6 +22,7 @@ class RobotContainer {
 
  private:
   void ConfigureBindings();
+  void ConfigureSysIdBinds();
   frc2::CommandPtr SteerVoltsSysIdCommands(std::function<bool()> fwd,
                                            std::function<bool()> quasistatic);
   frc2::CommandPtr SteerTorqueCurrentSysIdCommands(
