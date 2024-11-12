@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <units/angular_acceleration.h>
 #include <units/frequency.h>
 
 #include "frc/geometry/Translation2d.h"
@@ -11,7 +12,6 @@
 #include "frc/system/plant/DCMotor.h"
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angle.h"
-#include <units/angular_acceleration.h>
 
 namespace consts::swerve {
 
@@ -142,15 +142,14 @@ namespace gains {
 inline const str::swerve::SteerGains STEER{
     consts::swerve::physical::STEER_MOTOR.freeSpeed /
         consts::swerve::physical::STEER_GEARING,
-    str::gains::radial::turn_volt_ka_unit_t{.1},
-    str::gains::radial::turn_volt_kv_unit_t{
-        .12 * consts::swerve::physical::STEER_GEARING.value()},
-    str::gains::radial::turn_amp_ka_unit_t{.82395},
-    str::gains::radial::turn_amp_kv_unit_t{2.40},
-    4.7145_A,
-    str::gains::radial::turn_amp_kp_unit_t{500},
+    str::gains::radial::turn_volt_ka_unit_t{0.017218},
+    str::gains::radial::turn_volt_kv_unit_t{2.5241},
+    str::gains::radial::turn_amp_ka_unit_t{0.70949},
+    str::gains::radial::turn_amp_kv_unit_t{0},
+    9.7875_A,
+    str::gains::radial::turn_amp_kp_unit_t{19.762},
     str::gains::radial::turn_amp_ki_unit_t{0},
-    str::gains::radial::turn_amp_kd_unit_t{39.663},
+    str::gains::radial::turn_amp_kd_unit_t{0.0531},
 };
 
 inline const str::swerve::DriveGains DRIVE{

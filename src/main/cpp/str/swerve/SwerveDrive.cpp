@@ -5,6 +5,7 @@
 #include "str/swerve/SwerveDrive.h"
 
 #include <frc/DataLogManager.h>
+#include <frc/DriverStation.h>
 
 #include "constants/SwerveConstants.h"
 #include "ctre/phoenix/StatusCodes.h"
@@ -18,7 +19,6 @@
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angle.h"
 #include "units/angular_velocity.h"
-#include <frc/DriverStation.h>
 
 using namespace str::swerve;
 
@@ -216,7 +216,7 @@ void SwerveDrive::Drive(units::meters_per_second_t xVel,
   speeds = frc::ChassisSpeeds::Discretize(speeds, (1 / 50_Hz));
 
   std::array<frc::SwerveModuleState, 4> states =
-      consts::swerve::physical::KINEMATICS.ToSwerveModuleStates(speedsToSend);
+      consts::swerve::physical::KINEMATICS.ToSwerveModuleStates(speeds);
 
   SetModuleStates(
       states, true, openLoop,

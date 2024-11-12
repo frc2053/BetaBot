@@ -6,8 +6,12 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
-#include "subsystems/Drive.h"
 #include <frc2/command/button/NetworkButton.h>
+
+#include <functional>
+#include <memory>
+
+#include "subsystems/Drive.h"
 
 class RobotContainer {
  public:
@@ -18,6 +22,10 @@ class RobotContainer {
 
  private:
   void ConfigureBindings();
+  frc2::CommandPtr SteerSysIdCommands(std::function<bool()> fwd,
+                                      std::function<bool()> quasistatic);
+  frc2::CommandPtr DriveSysIdCommands(std::function<bool()> fwd,
+                                      std::function<bool()> quasistatic);
 
   frc2::CommandXboxController driverJoystick{0};
 
@@ -27,4 +35,6 @@ class RobotContainer {
       nt::NetworkTableInstance::GetDefault().GetTable("Tuning")};
   frc2::NetworkButton steerTuneBtn{tuningTable, "SteerPidTuning"};
   frc2::NetworkButton driveTuneBtn{tuningTable, "DrivePidTuning"};
+  frc2::NetworkButton steerSysIdBtn{tuningTable, "SteerSysId"};
+  frc2::NetworkButton driveSysIdBtn{tuningTable, "DriveSysId"};
 };

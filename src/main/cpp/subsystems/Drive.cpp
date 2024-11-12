@@ -1,9 +1,17 @@
+// Copyright (c) FRC 2053.
+// Open Source Software; you can modify and/or share it under the terms of
+// the MIT License file in the root of this project
+
 #include "subsystems/Drive.h"
+
+#include <frc/smartdashboard/SmartDashboard.h>
+
+#include <string>
+
 #include "constants/SwerveConstants.h"
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
 #include "str/swerve/SwerveModuleHelpers.h"
-#include <frc/smartdashboard/SmartDashboard.h>
 
 Drive::Drive() {}
 
@@ -41,6 +49,22 @@ frc2::CommandPtr Drive::DriveRobotRel(
              },
              {this})
       .WithName("DriveRobotRel");
+}
+
+frc2::CommandPtr Drive::SysIdSteerQuasistaticVoltage(
+    frc2::sysid::Direction dir) {
+  return steerSysId.Quasistatic(dir).WithName("Steer Quasistatic Voltage");
+}
+frc2::CommandPtr Drive::SysIdSteerDynamicVoltage(frc2::sysid::Direction dir) {
+  return steerSysId.Dynamic(dir).WithName("Steer Dynamic Voltage");
+}
+
+frc2::CommandPtr Drive::SysIdDriveQuasistaticVoltage(
+    frc2::sysid::Direction dir) {
+  return driveSysid.Quasistatic(dir).WithName("Drive Quasistatic Voltage");
+}
+frc2::CommandPtr Drive::SysIdDriveDynamicVoltage(frc2::sysid::Direction dir) {
+  return driveSysid.Dynamic(dir).WithName("Drive Dynamic Voltage");
 }
 
 frc2::CommandPtr Drive::TuneSteerPID(std::function<bool()> isDone) {

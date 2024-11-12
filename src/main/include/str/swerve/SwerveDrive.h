@@ -6,12 +6,13 @@
 
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
+#include <frc/smartdashboard/Field2d.h>
+#include <frc/sysid/SysIdRoutineLog.h>
 #include <networktables/DoubleTopic.h>
 #include <networktables/NetworkTable.h>
 #include <networktables/NetworkTableInstance.h>
 #include <networktables/StructArrayTopic.h>
 #include <networktables/StructTopic.h>
-#include <frc/smartdashboard/Field2d.h>
 
 #include <memory>
 
@@ -27,7 +28,6 @@
 #include "units/angular_velocity.h"
 #include "units/current.h"
 #include "units/velocity.h"
-#include <frc/sysid/SysIdRoutineLog.h>
 
 namespace str::swerve {
 class SwerveDrive {
