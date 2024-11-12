@@ -19,16 +19,16 @@ void RobotContainer::ConfigureBindings() {
       [this] {
         return str::NegateIfRed(
             frc::ApplyDeadband<double>(-driverJoystick.GetLeftY(), .1) *
-            consts::swerve::PHY_CHAR.MaxLinearSpeed());
+            consts::swerve::physical::PHY_CHAR.MaxLinearSpeed());
       },
       [this] {
         return str::NegateIfRed(
             frc::ApplyDeadband<double>(-driverJoystick.GetLeftX(), .1) *
-            consts::swerve::PHY_CHAR.MaxLinearSpeed());
+            consts::swerve::physical::PHY_CHAR.MaxLinearSpeed());
       },
       [this] {
         return frc::ApplyDeadband<double>(-driverJoystick.GetRightX(), .1) *
-               consts::swerve::DRIVE_MAX_ROT_SPEED;
+               consts::swerve::physical::MAX_ROT_SPEED;
       }));
 }
 

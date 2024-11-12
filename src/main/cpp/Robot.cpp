@@ -12,7 +12,6 @@
 #include <ctre/phoenix6/SignalLogger.hpp>
 
 #include "constants/SwerveConstants.h"
-#include "ctre/phoenix6/StatusSignal.hpp"
 
 Robot::Robot() {
   // DANGEROUS MAKE SURE CODE DOESN'T BLOCK!!!

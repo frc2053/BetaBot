@@ -10,6 +10,7 @@
 #include <networktables/NetworkTable.h>
 #include <networktables/NetworkTableInstance.h>
 #include <networktables/StructArrayTopic.h>
+#include <networktables/StructTopic.h>
 
 #include <memory>
 
@@ -18,8 +19,10 @@
 #include "constants/SwerveConstants.h"
 #include "frc/Alert.h"
 #include "frc/geometry/Pose2d.h"
+#include "frc/kinematics/ChassisSpeeds.h"
 #include "frc/kinematics/SwerveModuleState.h"
 #include "str/swerve/SwerveModule.h"
+#include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angular_velocity.h"
 #include "units/current.h"
 #include "units/velocity.h"
@@ -53,16 +56,20 @@ class SwerveDrive {
       const std::array<units::newton_t, 4>& yForce);
 
   std::array<SwerveModule, 4> modules{
-      SwerveModule{consts::swerve::FL_MODULE, consts::swerve::PHY_CHAR,
-                   consts::swerve::STEER_GAINS, consts::swerve::DRIVE_GAINS},
-      SwerveModule{consts::swerve::FR_MODULE, consts::swerve::PHY_CHAR,
-                   consts::swerve::STEER_GAINS, consts::swerve::DRIVE_GAINS},
-      SwerveModule{consts::swerve::BL_MODULE, consts::swerve::PHY_CHAR,
-                   consts::swerve::STEER_GAINS, consts::swerve::DRIVE_GAINS},
-      SwerveModule{consts::swerve::BR_MODULE, consts::swerve::PHY_CHAR,
-                   consts::swerve::STEER_GAINS, consts::swerve::DRIVE_GAINS}};
+      SwerveModule{consts::swerve::physical::FL,
+                   consts::swerve::physical::PHY_CHAR,
+                   consts::swerve::gains::STEER, consts::swerve::gains::DRIVE},
+      SwerveModule{consts::swerve::physical::FR,
+                   consts::swerve::physical::PHY_CHAR,
+                   consts::swerve::gains::STEER, consts::swerve::gains::DRIVE},
+      SwerveModule{consts::swerve::physical::BL,
+                   consts::swerve::physical::PHY_CHAR,
+                   consts::swerve::gains::STEER, consts::swerve::gains::DRIVE},
+      SwerveModule{consts::swerve::physical::BR,
+                   consts::swerve::physical::PHY_CHAR,
+                   consts::swerve::gains::STEER, consts::swerve::gains::DRIVE}};
 
-  ctre::phoenix6::hardware::Pigeon2 imu{consts::swerve::IMU_ID, "*"};
+  ctre::phoenix6::hardware::Pigeon2 imu{consts::swerve::can_ids::IMU, "*"};
   ctre::phoenix6::sim::Pigeon2SimState& imuSimState = imu.GetSimState();
 
   std::array<ctre::phoenix6::BaseStatusSignal*, 34> allSignals;
@@ -76,11 +83,11 @@ class SwerveDrive {
   std::array<units::newton_t, 4> xModuleForce{};
   std::array<units::newton_t, 4> yModuleForce{};
 
-  frc::SwerveDriveOdometry<4> odom{consts::swerve::KINEMATICS,
+  frc::SwerveDriveOdometry<4> odom{consts::swerve::physical::KINEMATICS,
                                    frc::Rotation2d{0_deg}, modulePositions};
   frc::SwerveDrivePoseEstimator<4> poseEstimator{
-      consts::swerve::KINEMATICS, frc::Rotation2d{0_deg}, modulePositions,
-      frc::Pose2d{}};
+      consts::swerve::physical::KINEMATICS, frc::Rotation2d{0_deg},
+      modulePositions, frc::Pose2d{}};
 
   static constexpr std::string_view imuConfigAlertStr = "Imu Configuration";
   static constexpr std::string_view imuOptimizeAlertStr = "Imu Optimization";
@@ -91,6 +98,24 @@ class SwerveDrive {
       nt::NetworkTableInstance::GetDefault().GetTable("Swerve")};
   nt::StructArrayPublisher<frc::SwerveModuleState> simStatesPub{
       nt->GetStructArrayTopic<frc::SwerveModuleState>("SimStates").Publish()};
+  nt::StructPublisher<frc::ChassisSpeeds> simChassiSpeeds{
+      nt->GetStructTopic<frc::ChassisSpeeds>("SimChassisSpeeds").Publish()};
+  nt::StructArrayPublisher<frc::SwerveModuleState> desiredStatesPub{
+      nt->GetStructArrayTopic<frc::SwerveModuleState>("DesiredStates")
+          .Publish()};
+  nt::StructArrayPublisher<frc::SwerveModuleState> currentStatesPub{
+      nt->GetStructArrayTopic<frc::SwerveModuleState>("CurrentStates")
+          .Publish()};
+  nt::StructArrayPublisher<frc::SwerveModulePosition> currentPositionsPub{
+      nt->GetStructArrayTopic<frc::SwerveModulePosition>("CurrentPositions")
+          .Publish()};
+  nt::StructArrayPublisher<frc::SwerveModuleState> forcesPub{
+      nt->GetStructArrayTopic<frc::SwerveModuleState>("PathForcesPub")
+          .Publish()};
+  nt::StructPublisher<frc::Pose2d> odomPosePub{
+      nt->GetStructTopic<frc::Pose2d>("OdometryPose").Publish()};
+  nt::StructPublisher<frc::Pose2d> estimatorPub{
+      nt->GetStructTopic<frc::Pose2d>("PoseEstimatorPose").Publish()};
   nt::DoublePublisher odomUpdateRatePub{
       nt->GetDoubleTopic("OdomUpdateRate").Publish()};
 };

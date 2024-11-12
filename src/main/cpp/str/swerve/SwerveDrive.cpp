@@ -12,6 +12,8 @@
 #include "frc/geometry/Pose2d.h"
 #include "frc/kinematics/ChassisSpeeds.h"
 #include "frc/kinematics/SwerveModuleState.h"
+#include "units/angle.h"
+#include "units/angular_velocity.h"
 #include <frc/DriverStation.h>
 
 using namespace str::swerve;
@@ -76,8 +78,12 @@ void SwerveDrive::UpdateSimulation() {
 
   simStatesPub.Set(simState);
 
-  units::radians_per_second_t omega =
-      consts::swerve::KINEMATICS.ToChassisSpeeds(simState).omega;
+  auto chassisSpeeds =
+      consts::swerve::physical::KINEMATICS.ToChassisSpeeds(simState);
+
+  simChassiSpeeds.Set(chassisSpeeds);
+
+  units::radians_per_second_t omega = chassisSpeeds.omega;
   units::radian_t angleChange = omega * (1 / 50_Hz);
 
   lastSimAngle = lastSimAngle + frc::Rotation2d{angleChange};
@@ -86,7 +92,11 @@ void SwerveDrive::UpdateSimulation() {
 }
 
 void SwerveDrive::UpdateNTEntries() {
+  currentStatesPub.Set(moduleStates);
+  currentPositionsPub.Set(modulePositions);
   odomUpdateRatePub.Set(odomUpdateRate.value());
+  estimatorPub.Set(poseEstimator.GetEstimatedPosition());
+  odomPosePub.Set(odom.GetPose());
 }
 
 void SwerveDrive::SetupSignals() {
@@ -127,9 +137,10 @@ void SwerveDrive::SetupSignals() {
 
 void SwerveDrive::ConfigureImu() {
   ctre::phoenix6::configs::Pigeon2Configuration imuConfig;
-  imuConfig.MountPose.MountPoseRoll = consts::swerve::IMU_MOUNT_ROLL;
-  imuConfig.MountPose.MountPosePitch = consts::swerve::IMU_MOUNT_PITCH;
-  imuConfig.MountPose.MountPoseYaw = consts::swerve::IMU_MOUNT_YAW;
+  imuConfig.MountPose.MountPoseRoll = consts::swerve::physical::IMU_MOUNT_ROLL;
+  imuConfig.MountPose.MountPosePitch =
+      consts::swerve::physical::IMU_MOUNT_PITCH;
+  imuConfig.MountPose.MountPoseYaw = consts::swerve::physical::IMU_MOUNT_YAW;
 
   ctre::phoenix::StatusCode imuConfigStatus =
       imu.GetConfigurator().Apply(imuConfig);
@@ -157,7 +168,7 @@ void SwerveDrive::DriveFieldRelative(units::meters_per_second_t xVel,
   speedsToSend =
       frc::ChassisSpeeds::FromFieldRelativeSpeeds(xVel, yVel, omega, rot);
 
-  Drive(speedsToSend.vx, speedsToSend.vx, speedsToSend.omega, openLoop);
+  Drive(speedsToSend.vx, speedsToSend.vy, speedsToSend.omega, openLoop);
 }
 
 void SwerveDrive::Drive(units::meters_per_second_t xVel,
@@ -170,16 +181,16 @@ void SwerveDrive::Drive(units::meters_per_second_t xVel,
 
   // https://github.com/wpilibsuite/allwpilib/issues/7332
   wpi::array<frc::SwerveModuleState, 4> tempStates =
-      consts::swerve::KINEMATICS.ToSwerveModuleStates(speedsToSend);
+      consts::swerve::physical::KINEMATICS.ToSwerveModuleStates(speedsToSend);
   frc::SwerveDriveKinematics<4>::DesaturateWheelSpeeds(
-      &tempStates, consts::swerve::PHY_CHAR.MaxLinearSpeed());
+      &tempStates, consts::swerve::physical::PHY_CHAR.MaxLinearSpeed());
   frc::ChassisSpeeds speeds =
-      consts::swerve::KINEMATICS.ToChassisSpeeds(tempStates);
+      consts::swerve::physical::KINEMATICS.ToChassisSpeeds(tempStates);
 
   speeds = frc::ChassisSpeeds::Discretize(speeds, (1 / 50_Hz));
 
   std::array<frc::SwerveModuleState, 4> states =
-      consts::swerve::KINEMATICS.ToSwerveModuleStates(speeds);
+      consts::swerve::physical::KINEMATICS.ToSwerveModuleStates(speedsToSend);
 
   SetModuleStates(
       states, true, openLoop,
@@ -191,14 +202,14 @@ void SwerveDrive::SetModuleStates(
     bool openLoop, const std::array<units::ampere_t, 4> moduleTorqueCurrentFF) {
   wpi::array<frc::SwerveModuleState, 4> finalState = desiredStates;
   frc::SwerveDriveKinematics<4>::DesaturateWheelSpeeds(
-      &finalState, consts::swerve::PHY_CHAR.MaxLinearSpeed());
+      &finalState, consts::swerve::physical::PHY_CHAR.MaxLinearSpeed());
   int i = 0;
   for (auto& mod : modules) {
     finalState[i] = mod.GoToState(finalState[i], optimize, openLoop,
                                   moduleTorqueCurrentFF[i]);
     i++;
   }
-  // desiredStatesPub.Set(finalState);
+  desiredStatesPub.Set(finalState);
 }
 
 std::array<units::ampere_t, 4> SwerveDrive::ConvertModuleForcesToTorqueCurrent(
@@ -217,15 +228,15 @@ std::array<units::ampere_t, 4> SwerveDrive::ConvertModuleForcesToTorqueCurrent(
         moduleForceFieldRef.RotateBy(GetPose().Rotation());
     units::newton_meter_t totalTorqueAtMotor =
         (units::newton_t{moduleForceRobotRef.Norm().value()} *
-         consts::swerve::PHY_CHAR.wheelRadius) /
-        consts::swerve::PHY_CHAR.driveGearing;
+         consts::swerve::physical::PHY_CHAR.wheelRadius) /
+        consts::swerve::physical::PHY_CHAR.driveGearing;
     units::ampere_t expectedTorqueCurrent =
-        totalTorqueAtMotor / consts::swerve::PHY_CHAR.driveMotor.Kt;
+        totalTorqueAtMotor / consts::swerve::physical::PHY_CHAR.driveMotor.Kt;
     retVal[i] = expectedTorqueCurrent;
     forces[i].angle = moduleForceRobotRef.Angle();
     forces[i].speed = units::feet_per_second_t{expectedTorqueCurrent.value()};
   }
-  // forcesPub.Set(forces);
+  forcesPub.Set(forces);
 
   return retVal;
 }

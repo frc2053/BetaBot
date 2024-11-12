@@ -12,6 +12,7 @@
 #include "ctre/phoenix6/signals/SpnEnums.hpp"
 #include "frc/Alert.h"
 #include "frc/DataLogManager.h"
+#include "frc/RobotBase.h"
 #include "str/swerve/SwerveModuleSim.h"
 #include "units/angle.h"
 
@@ -148,6 +149,10 @@ void SwerveModule::ConfigureSteerEncoder(units::turn_t encoderOffset) {
   encoderConfig.MagnetSensor.SensorDirection =
       ctre::phoenix6::signals::SensorDirectionValue::CounterClockwise_Positive;
 
+  if (frc::RobotBase::IsSimulation()) {
+    encoderConfig.MagnetSensor.MagnetOffset = 0_tr;
+  }
+
   ctre::phoenix::StatusCode configResult =
       steerEncoder.GetConfigurator().Apply(encoderConfig);
 
@@ -197,6 +202,11 @@ void SwerveModule::ConfigureSteerMotor(bool invert, units::scalar_t gearing,
 
   steerConfig.MotorOutput.ControlTimesyncFreqHz = 250_Hz;
 
+  if (frc::RobotBase::IsSimulation()) {
+    steerConfig.MotorOutput.Inverted =
+        ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+  }
+
   ctre::phoenix::StatusCode configResult =
       steerMotor.GetConfigurator().Apply(steerConfig);
 
@@ -237,6 +247,11 @@ void SwerveModule::ConfigureDriveMotor(bool invert, units::ampere_t supplyLim,
   driveConfig.CurrentLimits.SupplyCurrentLimit = supplyLim;
 
   driveConfig.MotorOutput.ControlTimesyncFreqHz = 250_Hz;
+
+  if (frc::RobotBase::IsSimulation()) {
+    driveConfig.MotorOutput.Inverted =
+        ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+  }
 
   ctre::phoenix::StatusCode configResult =
       driveMotor.GetConfigurator().Apply(driveConfig);

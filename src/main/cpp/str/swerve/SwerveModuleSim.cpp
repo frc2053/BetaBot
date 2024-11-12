@@ -45,13 +45,9 @@ SwerveModuleSim::SwerveModuleSim(
 
 frc::SwerveModuleState SwerveModuleSim::Update(units::volt_t supplyVoltage) {
   driveSimState.Orientation =
-      driveInverted
-          ? ctre::phoenix6::sim::ChassisReference::Clockwise_Positive
-          : ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
+      ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
   steerSimState.Orientation =
-      steerInverted
-          ? ctre::phoenix6::sim::ChassisReference::Clockwise_Positive
-          : ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
+      ctre::phoenix6::sim::ChassisReference::CounterClockwise_Positive;
 
   driveSimState.SetSupplyVoltage(supplyVoltage);
   steerSimState.SetSupplyVoltage(supplyVoltage);
