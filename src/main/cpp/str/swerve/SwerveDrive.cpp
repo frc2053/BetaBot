@@ -181,6 +181,10 @@ void SwerveDrive::ConfigureImu() {
   }
 }
 
+units::radian_t SwerveDrive::GetYawFromImu() const {
+  return yawLatencyComped;
+}
+
 void SwerveDrive::DriveFieldRelative(units::meters_per_second_t xVel,
                                      units::meters_per_second_t yVel,
                                      units::radians_per_second_t omega,
@@ -323,4 +327,10 @@ void SwerveDrive::LogDriveTorqueCurrent(frc::sysid::SysIdRoutineLog* log) {
       .voltage(units::volt_t{allSignals[4]->GetValueAsDouble()})
       .position(units::turn_t{allSignals[0]->GetValueAsDouble()})
       .velocity(units::turns_per_second_t{allSignals[1]->GetValueAsDouble()});
+}
+
+std::array<units::radian_t, 4>
+SwerveDrive::GetModuleDriveOutputShaftPositions() {
+  return {modules[0].GetOutputShaftTurns(), modules[1].GetOutputShaftTurns(),
+          modules[2].GetOutputShaftTurns(), modules[3].GetOutputShaftTurns()};
 }

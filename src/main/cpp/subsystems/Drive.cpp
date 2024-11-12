@@ -9,6 +9,7 @@
 #include <string>
 
 #include "constants/SwerveConstants.h"
+#include "frc/MathUtil.h"
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
 #include "str/swerve/SwerveModuleHelpers.h"
@@ -210,4 +211,57 @@ frc2::CommandPtr Drive::TuneDrivePID(std::function<bool()> isDone) {
           },
           {this})
           .Until(isDone));
+}
+
+frc2::CommandPtr Drive::WheelRadius(frc2::sysid::Direction dir) {
+  return frc2::cmd::Sequence(
+             frc2::cmd::RunOnce(
+                 [this] {
+                   wheelRadiusData.lastGyroYaw = swerveDrive.GetYawFromImu();
+                   wheelRadiusData.accumGyroYaw = 0_rad;
+                   wheelRadiusData.startWheelPositions =
+                       swerveDrive.GetModuleDriveOutputShaftPositions();
+                   wheelRadiusData.omegaLimiter.Reset(0_rad_per_s);
+                   wheelRadiusData.effectiveWheelRadius = 0_in;
+                 },
+                 {this}),
+             frc2::cmd::RunEnd(
+                 [this, dir] {
+                   double dirMulti = 1.0;
+                   if (dir == frc2::sysid::Direction::kReverse) {
+                     dirMulti = -1.0;
+                   }
+                   units::radian_t currentYaw = swerveDrive.GetYawFromImu();
+                   swerveDrive.Drive(0_mps, 0_mps,
+                                     wheelRadiusData.omegaLimiter.Calculate(
+                                         1_rad_per_s * dirMulti),
+                                     true);
+                   wheelRadiusData.accumGyroYaw += frc::AngleModulus(
+                       currentYaw - wheelRadiusData.lastGyroYaw);
+                   wheelRadiusData.lastGyroYaw = currentYaw;
+                   units::radian_t avgWheelPos = 0.0_rad;
+                   std::array<units::radian_t, 4> currentPositions;
+                   currentPositions =
+                       swerveDrive.GetModuleDriveOutputShaftPositions();
+                   for (int i = 0; i < 4; i++) {
+                     avgWheelPos += units::math::abs(
+                         currentPositions[i] -
+                         wheelRadiusData.startWheelPositions[i]);
+                   }
+                   avgWheelPos /= 4.0;
+                   wheelRadiusData.effectiveWheelRadius =
+                       (wheelRadiusData.accumGyroYaw *
+                        consts::swerve::physical::DRIVEBASE_RADIUS) /
+                       avgWheelPos;
+                 },
+                 [this] {
+                   swerveDrive.Drive(0_mps, 0_mps, 0_rad_per_s, true);
+                   frc::DataLogManager::Log(
+                       fmt::format("WHEEL RADIUS: {}\n\n\n\n\n",
+                                   wheelRadiusData.effectiveWheelRadius
+                                       .convert<units::inches>()
+                                       .value()));
+                 },
+                 {this}))
+      .WithName("Wheel Radius Calculation");
 }

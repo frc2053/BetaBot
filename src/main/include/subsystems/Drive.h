@@ -12,6 +12,7 @@
 #include "ctre/phoenix6/SignalLogger.hpp"
 #include "frc/DataLogManager.h"
 #include "str/swerve/SwerveDrive.h"
+#include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angular_velocity.h"
 #include "units/current.h"
 #include "units/velocity.h"
@@ -45,9 +46,12 @@ class Drive : public frc2::SubsystemBase {
   frc2::CommandPtr SysIdDriveDynamicTorqueCurrent(frc2::sysid::Direction dir);
   frc2::CommandPtr TuneSteerPID(std::function<bool()> isDone);
   frc2::CommandPtr TuneDrivePID(std::function<bool()> isDone);
+  frc2::CommandPtr WheelRadius(frc2::sysid::Direction dir);
 
  private:
   str::swerve::SwerveDrive swerveDrive{};
+
+  str::swerve::WheelRadiusCharData wheelRadiusData{};
 
   frc2::sysid::SysIdRoutine steerSysIdVoltage{
       frc2::sysid::Config{
@@ -66,15 +70,10 @@ class Drive : public frc2::SubsystemBase {
                              },
                              this, "swerve-steer"}};
 
-  wpi::log::StringLogEntry stateEntry{wpi::log::StringLogEntry(
-      frc::DataLogManager::GetLog(), "SysIdSteer_State")};
-
   frc2::sysid::SysIdRoutine steerSysIdTorqueCurrent{
       frc2::sysid::Config{
           (2_V / 1_s), 20_V, std::nullopt,
-          [this](frc::sysid::State state) {
-            stateEntry.Append(
-                frc::sysid::SysIdRoutineLog::StateEnumToString(state));
+          [](frc::sysid::State state) {
             ctre::phoenix6::SignalLogger().WriteString(
                 "SysIdSteer_State",
                 frc::sysid::SysIdRoutineLog::StateEnumToString(state));

@@ -19,6 +19,7 @@
 
 #include "units/angular_velocity.h"
 #include "units/velocity.h"
+#include <frc/filter/SlewRateLimiter.h>
 
 namespace str::swerve {
 struct ModuleConstants {
@@ -158,5 +159,14 @@ struct DriveGains {
            units::essentiallyEqual(kD, rhs.kD, 1e-6);
   }
   bool operator!=(const DriveGains& rhs) const { return !operator==(rhs); }
+};
+
+struct WheelRadiusCharData {
+  units::radian_t lastGyroYaw;
+  units::radian_t accumGyroYaw;
+  std::array<units::radian_t, 4> startWheelPositions;
+  units::meter_t effectiveWheelRadius = 0_m;
+  frc::SlewRateLimiter<units::radians_per_second> omegaLimiter{1_rad_per_s /
+                                                               1_s};
 };
 }  // namespace str::swerve

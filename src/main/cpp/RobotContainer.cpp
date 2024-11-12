@@ -41,6 +41,7 @@ void RobotContainer::ConfigureSysIdBinds() {
   tuningTable->PutBoolean("SteerSysIdVolts", false);
   tuningTable->PutBoolean("SteerSysIdTorqueCurrent", false);
   tuningTable->PutBoolean("DriveSysId", false);
+  tuningTable->PutBoolean("WheelRadius", false);
   tuningTable->PutBoolean("Quasistatic", true);
   tuningTable->PutBoolean("Forward", true);
 
@@ -58,6 +59,8 @@ void RobotContainer::ConfigureSysIdBinds() {
   driveSysIdBtn.WhileTrue(DriveSysIdCommands(
       [this] { return tuningTable->GetBoolean("Forward", true); },
       [this] { return tuningTable->GetBoolean("Quasistatic", true); }));
+  wheelRadiusBtn.WhileTrue(WheelRadiusSysIdCommands(
+      [this] { return tuningTable->GetBoolean("Forward", true); }));
 }
 
 frc2::CommandPtr RobotContainer::SteerVoltsSysIdCommands(
@@ -106,6 +109,13 @@ frc2::CommandPtr RobotContainer::DriveSysIdCommands(
                             frc2::sysid::Direction::kReverse),
                         quasistatic),
       fwd);
+}
+
+frc2::CommandPtr RobotContainer::WheelRadiusSysIdCommands(
+    std::function<bool()> fwd) {
+  return frc2::cmd::Either(
+      driveSub.WheelRadius(frc2::sysid::Direction::kForward),
+      driveSub.WheelRadius(frc2::sysid::Direction::kReverse), fwd);
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

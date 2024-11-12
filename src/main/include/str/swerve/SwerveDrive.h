@@ -25,6 +25,7 @@
 #include "frc/kinematics/SwerveModuleState.h"
 #include "str/swerve/SwerveModule.h"
 #include "str/swerve/SwerveModuleHelpers.h"
+#include "units/angle.h"
 #include "units/angular_velocity.h"
 #include "units/current.h"
 #include "units/velocity.h"
@@ -46,6 +47,8 @@ class SwerveDrive {
   void Drive(units::meters_per_second_t xVel, units::meters_per_second_t yVel,
              units::radians_per_second_t omega, bool openLoop);
 
+  units::radian_t GetYawFromImu() const;
+
   str::swerve::SteerGains GetSteerGains() const;
   void SetSteerGains(str::swerve::SteerGains newGains);
   str::swerve::DriveGains GetDriveGains() const;
@@ -61,6 +64,7 @@ class SwerveDrive {
       const std::array<frc::SwerveModuleState, 4>& desiredStates, bool optimize,
       bool openLoop,
       const std::array<units::ampere_t, 4> moduleTorqueCurrentFF);
+  std::array<units::radian_t, 4> GetModuleDriveOutputShaftPositions();
 
  private:
   void SetupSignals();

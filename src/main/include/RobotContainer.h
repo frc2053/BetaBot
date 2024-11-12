@@ -29,6 +29,7 @@ class RobotContainer {
       std::function<bool()> fwd, std::function<bool()> quasistatic);
   frc2::CommandPtr DriveSysIdCommands(std::function<bool()> fwd,
                                       std::function<bool()> quasistatic);
+  frc2::CommandPtr WheelRadiusSysIdCommands(std::function<bool()> fwd);
 
   frc2::CommandXboxController driverJoystick{0};
 
@@ -42,4 +43,5 @@ class RobotContainer {
   frc2::NetworkButton steerSysIdTorqueCurrentBtn{tuningTable,
                                                  "SteerSysIdTorqueCurrent"};
   frc2::NetworkButton driveSysIdBtn{tuningTable, "DriveSysId"};
+  frc2::NetworkButton wheelRadiusBtn{tuningTable, "WheelRadius"};
 };
