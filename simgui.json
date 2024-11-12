@@ -1,0 +1,82 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Module 0": "Mechanism2d",
+      "/SmartDashboard/Module 1": "Mechanism2d",
+      "/SmartDashboard/Module 2": "Mechanism2d",
+      "/SmartDashboard/Module 3": "Mechanism2d",
+      "/SmartDashboard/SwerveField": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/SwerveField": {
+        "BL Pos": {
+          "image": "swerve_module.png",
+          "length": 0.20000000298023224,
+          "width": 0.20000000298023224
+        },
+        "BR Pos": {
+          "image": "swerve_module.png",
+          "length": 0.20000000298023224,
+          "width": 0.20000000298023224
+        },
+        "FL Pos": {
+          "image": "swerve_module.png",
+          "length": 0.20000000298023224,
+          "width": 0.20000000298023224
+        },
+        "FR Pos": {
+          "image": "swerve_module.png",
+          "length": 0.20000000298023224,
+          "width": 0.20000000298023224
+        },
+        "Robot": {
+          "weight": 2.0
+        },
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Drive": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "Alerts": {
+          "open": true,
+          "string[]##v_/SmartDashboard/Alerts/errors": {
+            "open": true
+          }
+        },
+        "open": true
+      },
+      "Swerve": {
+        "SwerveModuleState[]##v_/Swerve/SimStates": {
+          "SwerveModuleState##v_[0]": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
+    "visible": true
+  }
+}

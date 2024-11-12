@@ -11,6 +11,7 @@
 #include <networktables/NetworkTableInstance.h>
 #include <networktables/StructArrayTopic.h>
 #include <networktables/StructTopic.h>
+#include <frc/smartdashboard/Field2d.h>
 
 #include <memory>
 
@@ -105,6 +106,7 @@ class SwerveDrive {
   frc::Alert imuConfigAlert;
   frc::Alert imuOptimizeAlert;
 
+  frc::Field2d swerveField{};
   std::shared_ptr<nt::NetworkTable> nt{
       nt::NetworkTableInstance::GetDefault().GetTable("Swerve")};
   nt::StructArrayPublisher<frc::SwerveModuleState> simStatesPub{

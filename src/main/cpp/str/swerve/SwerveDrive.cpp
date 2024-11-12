@@ -10,8 +10,11 @@
 #include "ctre/phoenix/StatusCodes.h"
 #include "frc/Alert.h"
 #include "frc/geometry/Pose2d.h"
+#include "frc/geometry/Rotation2d.h"
+#include "frc/geometry/Transform3d.h"
 #include "frc/kinematics/ChassisSpeeds.h"
 #include "frc/kinematics/SwerveModuleState.h"
+#include "frc/smartdashboard/SmartDashboard.h"
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angle.h"
 #include "units/angular_velocity.h"
@@ -24,6 +27,7 @@ SwerveDrive::SwerveDrive()
       imuOptimizeAlert{imuOptimizeAlertStr, frc::Alert::AlertType::kError} {
   ConfigureImu();
   SetupSignals();
+  frc::SmartDashboard::PutData("SwerveField", &swerveField);
 }
 
 frc::Pose2d SwerveDrive::GetPose() const {
@@ -98,6 +102,27 @@ void SwerveDrive::UpdateNTEntries() {
   odomUpdateRatePub.Set(odomUpdateRate.value());
   estimatorPub.Set(poseEstimator.GetEstimatedPosition());
   odomPosePub.Set(odom.GetPose());
+  swerveField.SetRobotPose(poseEstimator.GetEstimatedPosition());
+  swerveField.GetObject("FL Pos")->SetPose(
+      poseEstimator.GetEstimatedPosition().TransformBy(
+          frc::Transform2d{consts::swerve::physical::WHEELBASE_LENGTH / 2,
+                           consts::swerve::physical::WHEELBASE_WIDTH / 2,
+                           frc::Rotation2d{modules[0].GetState().angle}}));
+  swerveField.GetObject("FR Pos")->SetPose(
+      poseEstimator.GetEstimatedPosition().TransformBy(
+          frc::Transform2d{consts::swerve::physical::WHEELBASE_LENGTH / 2,
+                           -consts::swerve::physical::WHEELBASE_WIDTH / 2,
+                           frc::Rotation2d{modules[1].GetState().angle}}));
+  swerveField.GetObject("BL Pos")->SetPose(
+      poseEstimator.GetEstimatedPosition().TransformBy(
+          frc::Transform2d{-consts::swerve::physical::WHEELBASE_LENGTH / 2,
+                           consts::swerve::physical::WHEELBASE_WIDTH / 2,
+                           frc::Rotation2d{modules[2].GetState().angle}}));
+  swerveField.GetObject("BR Pos")->SetPose(
+      poseEstimator.GetEstimatedPosition().TransformBy(
+          frc::Transform2d{-consts::swerve::physical::WHEELBASE_LENGTH / 2,
+                           -consts::swerve::physical::WHEELBASE_WIDTH / 2,
+                           frc::Rotation2d{modules[3].GetState().angle}}));
 }
 
 void SwerveDrive::SetupSignals() {
