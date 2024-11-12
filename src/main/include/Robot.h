@@ -33,4 +33,18 @@ class Robot : public frc::TimedRobot {
   std::optional<frc2::CommandPtr> m_autonomousCommand;
 
   RobotContainer m_container;
+
+  units::second_t lastTotalLoopTime;
+  nt::DoublePublisher loopTimePub{nt::NetworkTableInstance::GetDefault()
+                                      .GetTable("Metadata")
+                                      ->GetDoubleTopic("RobotPeriodicLoopRate")
+                                      .Publish()};
+  nt::DoublePublisher matchTimePub{nt::NetworkTableInstance::GetDefault()
+                                       .GetTable("Metadata")
+                                       ->GetDoubleTopic("MatchTime")
+                                       .Publish()};
+  nt::DoublePublisher battVoltagePub{nt::NetworkTableInstance::GetDefault()
+                                         .GetTable("Metadata")
+                                         ->GetDoubleTopic("BatteryVoltage")
+                                         .Publish()};
 };

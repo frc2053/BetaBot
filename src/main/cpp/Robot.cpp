@@ -25,7 +25,15 @@ Robot::Robot() {
 }
 
 void Robot::RobotPeriodic() {
+  units::second_t now = frc::Timer::GetFPGATimestamp();
+  units::second_t loopTime = now - lastTotalLoopTime;
+  loopTimePub.Set((1 / loopTime).value());
+
   frc2::CommandScheduler::GetInstance().Run();
+
+  lastTotalLoopTime = now;
+  matchTimePub.Set(frc::DriverStation::GetMatchTime().value());
+  battVoltagePub.Set(frc::RobotController::GetBatteryVoltage().value());
 }
 
 void Robot::DisabledInit() {}
