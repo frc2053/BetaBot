@@ -153,10 +153,10 @@ inline const str::swerve::SteerGains STEER{
 };
 
 inline const str::swerve::DriveGains DRIVE{
-    str::gains::radial::turn_amp_ka_unit_t{0},
+    str::gains::radial::turn_amp_ka_unit_t{0.070827},
     str::gains::radial::turn_amp_kv_unit_t{0},
-    9_A,
-    str::gains::radial::turn_amp_kp_unit_t{9},
+    10.051_A,
+    str::gains::radial::turn_amp_kp_unit_t{3.596},
     str::gains::radial::turn_amp_ki_unit_t{0},
     str::gains::radial::turn_amp_kd_unit_t{0},
 };

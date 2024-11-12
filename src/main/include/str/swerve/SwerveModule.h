@@ -14,6 +14,7 @@
 
 #include "SwerveModuleHelpers.h"
 #include "ctre/phoenix6/StatusSignal.hpp"
+#include "ctre/phoenix6/controls/TorqueCurrentFOC.hpp"
 #include "frc/kinematics/SwerveModulePosition.h"
 #include "frc/kinematics/SwerveModuleState.h"
 #include "str/swerve/SwerveModuleHelpers.h"
@@ -44,8 +45,9 @@ class SwerveModule {
   str::swerve::SteerGains GetSteerGains() const;
   str::swerve::DriveGains GetDriveGains() const;
   units::ampere_t GetSimulatedCurrentDraw() const;
+  void SetSteerToAmps(units::ampere_t ampsToSend);
   void SetSteerToVoltage(units::volt_t voltsToSend);
-  void SetDriveToVoltage(units::volt_t voltsToSend);
+  void SetDriveToAmps(units::ampere_t ampsToSend);
 
  private:
   void ConfigureSteerEncoder(units::turn_t encoderOffset);
@@ -113,6 +115,8 @@ class SwerveModule {
 
   ctre::phoenix6::controls::VoltageOut steerVoltageSetter{0_V};
   ctre::phoenix6::controls::VoltageOut driveVoltageSetter{0_V};
+  ctre::phoenix6::controls::TorqueCurrentFOC steerTorqueCurrentSetter{0_A};
+  ctre::phoenix6::controls::TorqueCurrentFOC driveTorqueCurrentSetter{0_A};
 
   SwerveModuleSim moduleSim;
 };

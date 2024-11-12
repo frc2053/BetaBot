@@ -19,6 +19,8 @@
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angle.h"
 #include "units/angular_velocity.h"
+#include "units/current.h"
+#include "units/voltage.h"
 
 using namespace str::swerve;
 
@@ -287,27 +289,38 @@ void SwerveDrive::SetDriveGains(DriveGains newGains) {
   }
 }
 
-void SwerveDrive::SetCharacterizationVoltageSteer(units::volt_t volts) {
+void SwerveDrive::SetCharacterizationVoltsSteer(units::volt_t volts) {
   modules[0].SetSteerToVoltage(volts);
 }
 
-void SwerveDrive::SetCharacterizationVoltageDrive(units::volt_t volts) {
-  modules[0].SetDriveToVoltage(volts);
-  modules[1].SetDriveToVoltage(volts);
-  modules[2].SetDriveToVoltage(volts);
-  modules[3].SetDriveToVoltage(volts);
+void SwerveDrive::SetCharacterizationAmpsSteer(units::ampere_t amps) {
+  modules[0].SetSteerToAmps(amps);
 }
 
-void SwerveDrive::LogSteerVoltage(frc::sysid::SysIdRoutineLog* log) {
+void SwerveDrive::SetCharacterizationAmpsDrive(units::ampere_t amps) {
+  modules[0].SetDriveToAmps(amps);
+  modules[1].SetDriveToAmps(amps);
+  modules[2].SetDriveToAmps(amps);
+  modules[3].SetDriveToAmps(amps);
+}
+
+void SwerveDrive::LogSteerVolts(frc::sysid::SysIdRoutineLog* log) {
   log->Motor("swerve-steer")
       .voltage(units::volt_t{allSignals[7]->GetValueAsDouble()})
       .position(units::turn_t{allSignals[2]->GetValueAsDouble()})
       .velocity(units::turns_per_second_t{allSignals[3]->GetValueAsDouble()});
 }
 
-void SwerveDrive::LogDriveVoltage(frc::sysid::SysIdRoutineLog* log) {
+void SwerveDrive::LogSteerTorqueCurrent(frc::sysid::SysIdRoutineLog* log) {
+  log->Motor("swerve-steer")
+      .voltage(units::volt_t{allSignals[5]->GetValueAsDouble()})
+      .position(units::turn_t{allSignals[2]->GetValueAsDouble()})
+      .velocity(units::turns_per_second_t{allSignals[3]->GetValueAsDouble()});
+}
+
+void SwerveDrive::LogDriveTorqueCurrent(frc::sysid::SysIdRoutineLog* log) {
   log->Motor("swerve-drive")
-      .voltage(units::volt_t{allSignals[6]->GetValueAsDouble()})
+      .voltage(units::volt_t{allSignals[4]->GetValueAsDouble()})
       .position(units::turn_t{allSignals[0]->GetValueAsDouble()})
       .velocity(units::turns_per_second_t{allSignals[1]->GetValueAsDouble()});
 }

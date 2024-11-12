@@ -53,18 +53,32 @@ frc2::CommandPtr Drive::DriveRobotRel(
 
 frc2::CommandPtr Drive::SysIdSteerQuasistaticVoltage(
     frc2::sysid::Direction dir) {
-  return steerSysId.Quasistatic(dir).WithName("Steer Quasistatic Voltage");
+  return steerSysIdVoltage.Quasistatic(dir).WithName(
+      "Steer Quasistatic Voltage");
 }
 frc2::CommandPtr Drive::SysIdSteerDynamicVoltage(frc2::sysid::Direction dir) {
-  return steerSysId.Dynamic(dir).WithName("Steer Dynamic Voltage");
+  return steerSysIdVoltage.Dynamic(dir).WithName("Steer Dynamic Voltage");
 }
 
-frc2::CommandPtr Drive::SysIdDriveQuasistaticVoltage(
+frc2::CommandPtr Drive::SysIdSteerQuasistaticTorqueCurrent(
     frc2::sysid::Direction dir) {
-  return driveSysid.Quasistatic(dir).WithName("Drive Quasistatic Voltage");
+  return steerSysIdTorqueCurrent.Quasistatic(dir).WithName(
+      "Steer Quasistatic Torque Current");
 }
-frc2::CommandPtr Drive::SysIdDriveDynamicVoltage(frc2::sysid::Direction dir) {
-  return driveSysid.Dynamic(dir).WithName("Drive Dynamic Voltage");
+frc2::CommandPtr Drive::SysIdSteerDynamicTorqueCurrent(
+    frc2::sysid::Direction dir) {
+  return steerSysIdTorqueCurrent.Dynamic(dir).WithName(
+      "Steer Dynamic Torque Current");
+}
+
+frc2::CommandPtr Drive::SysIdDriveQuasistaticTorqueCurrent(
+    frc2::sysid::Direction dir) {
+  return driveSysid.Quasistatic(dir).WithName(
+      "Drive Quasistatic Torque Current");
+}
+frc2::CommandPtr Drive::SysIdDriveDynamicTorqueCurrent(
+    frc2::sysid::Direction dir) {
+  return driveSysid.Dynamic(dir).WithName("Drive Dynamic Torque Current");
 }
 
 frc2::CommandPtr Drive::TuneSteerPID(std::function<bool()> isDone) {

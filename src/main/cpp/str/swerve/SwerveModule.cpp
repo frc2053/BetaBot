@@ -15,6 +15,7 @@
 #include "frc/RobotBase.h"
 #include "str/swerve/SwerveModuleSim.h"
 #include "units/angle.h"
+#include "units/current.h"
 
 using namespace str::swerve;
 
@@ -355,9 +356,13 @@ void SwerveModule::SetSteerToVoltage(units::volt_t voltsToSend) {
   steerMotor.SetControl(
       steerVoltageSetter.WithOutput(voltsToSend).WithEnableFOC(true));
 }
-void SwerveModule::SetDriveToVoltage(units::volt_t voltsToSend) {
-  driveMotor.SetControl(
-      driveVoltageSetter.WithOutput(voltsToSend).WithEnableFOC(true));
+
+void SwerveModule::SetSteerToAmps(units::ampere_t ampsToSend) {
+  steerMotor.SetControl(steerTorqueCurrentSetter.WithOutput(ampsToSend));
+}
+
+void SwerveModule::SetDriveToAmps(units::ampere_t ampsToSend) {
+  driveMotor.SetControl(driveTorqueCurrentSetter.WithOutput(ampsToSend));
 }
 
 void SwerveModule::ConfigureControlSignals() {
@@ -365,10 +370,16 @@ void SwerveModule::ConfigureControlSignals() {
   driveVelocitySetter.UpdateFreqHz = 0_Hz;
   steerVoltageSetter.UpdateFreqHz = 0_Hz;
   driveVoltageSetter.UpdateFreqHz = 0_Hz;
+  steerTorqueCurrentSetter.UpdateFreqHz = 0_Hz;
+  driveTorqueCurrentSetter.UpdateFreqHz = 0_Hz;
   steerAngleSetter.UseTimesync = true;
   driveVelocitySetter.UseTimesync = true;
   steerVoltageSetter.UseTimesync = true;
   driveVoltageSetter.UseTimesync = true;
+  steerTorqueCurrentSetter.UseTimesync = true;
+  driveTorqueCurrentSetter.UseTimesync = true;
+  steerTorqueCurrentSetter.OverrideCoastDurNeutral = true;
+  driveTorqueCurrentSetter.OverrideCoastDurNeutral = true;
   driveVelocitySetter.OverrideCoastDurNeutral = true;
 }
 

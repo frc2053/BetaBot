@@ -22,8 +22,10 @@ class RobotContainer {
 
  private:
   void ConfigureBindings();
-  frc2::CommandPtr SteerSysIdCommands(std::function<bool()> fwd,
-                                      std::function<bool()> quasistatic);
+  frc2::CommandPtr SteerVoltsSysIdCommands(std::function<bool()> fwd,
+                                           std::function<bool()> quasistatic);
+  frc2::CommandPtr SteerTorqueCurrentSysIdCommands(
+      std::function<bool()> fwd, std::function<bool()> quasistatic);
   frc2::CommandPtr DriveSysIdCommands(std::function<bool()> fwd,
                                       std::function<bool()> quasistatic);
 
@@ -35,6 +37,8 @@ class RobotContainer {
       nt::NetworkTableInstance::GetDefault().GetTable("Tuning")};
   frc2::NetworkButton steerTuneBtn{tuningTable, "SteerPidTuning"};
   frc2::NetworkButton driveTuneBtn{tuningTable, "DrivePidTuning"};
-  frc2::NetworkButton steerSysIdBtn{tuningTable, "SteerSysId"};
+  frc2::NetworkButton steerSysIdVoltsBtn{tuningTable, "SteerSysIdVolts"};
+  frc2::NetworkButton steerSysIdTorqueCurrentBtn{tuningTable,
+                                                 "SteerSysIdTorqueCurrent"};
   frc2::NetworkButton driveSysIdBtn{tuningTable, "DriveSysId"};
 };

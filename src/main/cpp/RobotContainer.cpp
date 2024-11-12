@@ -19,7 +19,8 @@ RobotContainer::RobotContainer() {
 void RobotContainer::ConfigureBindings() {
   tuningTable->PutBoolean("SteerPidTuning", false);
   tuningTable->PutBoolean("DrivePidTuning", false);
-  tuningTable->PutBoolean("SteerSysId", false);
+  tuningTable->PutBoolean("SteerSysIdVolts", false);
+  tuningTable->PutBoolean("SteerSysIdTorqueCurrent", false);
   tuningTable->PutBoolean("DriveSysId", false);
   tuningTable->PutBoolean("Quasistatic", true);
   tuningTable->PutBoolean("Forward", true);
@@ -29,7 +30,10 @@ void RobotContainer::ConfigureBindings() {
   driveTuneBtn.OnTrue(
       driveSub.TuneDrivePID([this] { return !driveTuneBtn.Get(); }));
 
-  steerSysIdBtn.WhileTrue(SteerSysIdCommands(
+  steerSysIdVoltsBtn.WhileTrue(SteerVoltsSysIdCommands(
+      [this] { return tuningTable->GetBoolean("Forward", true); },
+      [this] { return tuningTable->GetBoolean("Quasistatic", true); }));
+  steerSysIdTorqueCurrentBtn.WhileTrue(SteerTorqueCurrentSysIdCommands(
       [this] { return tuningTable->GetBoolean("Forward", true); },
       [this] { return tuningTable->GetBoolean("Quasistatic", true); }));
   driveSysIdBtn.WhileTrue(DriveSysIdCommands(
@@ -53,7 +57,7 @@ void RobotContainer::ConfigureBindings() {
       }));
 }
 
-frc2::CommandPtr RobotContainer::SteerSysIdCommands(
+frc2::CommandPtr RobotContainer::SteerVoltsSysIdCommands(
     std::function<bool()> fwd, std::function<bool()> quasistatic) {
   return frc2::cmd::Either(
       frc2::cmd::Either(
@@ -69,19 +73,35 @@ frc2::CommandPtr RobotContainer::SteerSysIdCommands(
       fwd);
 }
 
+frc2::CommandPtr RobotContainer::SteerTorqueCurrentSysIdCommands(
+    std::function<bool()> fwd, std::function<bool()> quasistatic) {
+  return frc2::cmd::Either(
+      frc2::cmd::Either(driveSub.SysIdSteerQuasistaticTorqueCurrent(
+                            frc2::sysid::Direction::kForward),
+                        driveSub.SysIdSteerDynamicTorqueCurrent(
+                            frc2::sysid::Direction::kForward),
+                        quasistatic),
+      frc2::cmd::Either(driveSub.SysIdSteerQuasistaticTorqueCurrent(
+                            frc2::sysid::Direction::kReverse),
+                        driveSub.SysIdSteerDynamicTorqueCurrent(
+                            frc2::sysid::Direction::kReverse),
+                        quasistatic),
+      fwd);
+}
+
 frc2::CommandPtr RobotContainer::DriveSysIdCommands(
     std::function<bool()> fwd, std::function<bool()> quasistatic) {
   return frc2::cmd::Either(
-      frc2::cmd::Either(
-          driveSub.SysIdDriveQuasistaticVoltage(
-              frc2::sysid::Direction::kForward),
-          driveSub.SysIdDriveDynamicVoltage(frc2::sysid::Direction::kForward),
-          quasistatic),
-      frc2::cmd::Either(
-          driveSub.SysIdDriveQuasistaticVoltage(
-              frc2::sysid::Direction::kReverse),
-          driveSub.SysIdDriveDynamicVoltage(frc2::sysid::Direction::kReverse),
-          quasistatic),
+      frc2::cmd::Either(driveSub.SysIdDriveQuasistaticTorqueCurrent(
+                            frc2::sysid::Direction::kForward),
+                        driveSub.SysIdDriveDynamicTorqueCurrent(
+                            frc2::sysid::Direction::kForward),
+                        quasistatic),
+      frc2::cmd::Either(driveSub.SysIdDriveQuasistaticTorqueCurrent(
+                            frc2::sysid::Direction::kReverse),
+                        driveSub.SysIdDriveDynamicTorqueCurrent(
+                            frc2::sysid::Direction::kReverse),
+                        quasistatic),
       fwd);
 }
 
