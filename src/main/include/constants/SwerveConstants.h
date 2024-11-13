@@ -10,6 +10,7 @@
 #include "frc/geometry/Translation2d.h"
 #include "frc/kinematics/SwerveDriveKinematics.h"
 #include "frc/system/plant/DCMotor.h"
+#include "pathplanner/lib/config/RobotConfig.h"
 #include "str/swerve/SwerveModuleHelpers.h"
 #include "units/angle.h"
 
@@ -174,4 +175,35 @@ inline const str::swerve::DriveGains DRIVE{
     str::gains::radial::turn_amp_kd_unit_t{0},
 };
 }  // namespace gains
+
+namespace pathplanning {
+
+inline constexpr units::scalar_t POSE_P = 5;
+inline constexpr units::scalar_t POSE_I = 0;
+inline constexpr units::scalar_t POSE_D = 0;
+
+inline constexpr units::scalar_t ROTATION_P = 10;
+inline constexpr units::scalar_t ROTATION_I = 0;
+inline constexpr units::scalar_t ROTATION_D = 0;
+
+// Choreo paths don't support replanning, so just disable me
+inline constexpr bool INITIAL_REPLAN = false;
+inline constexpr bool DYNAMIC_REPLAN = false;
+inline constexpr units::meter_t DYNAMIC_REPLAN_THRESHOLD_TOTAL = 3_ft;
+inline constexpr units::meter_t DYNAMIC_REPLAN_THRESHOLD_SPIKE = 1_ft;
+
+inline static pathplanner::RobotConfig config =
+    pathplanner::RobotConfig::fromGUISettings();
+
+inline constexpr units::meter_t translationalPIDTolerance = .5_in;
+inline constexpr units::meters_per_second_t translationalVelPIDTolerance =
+    1_fps;
+inline constexpr units::radian_t rotationalPIDTolerance = 1_deg;
+inline constexpr units::radians_per_second_t rotationalVelPIDTolerance =
+    10_deg_per_s;
+inline constexpr units::meters_per_second_t translationalVelPIDDeadband =
+    0.5_fps;
+inline constexpr units::radians_per_second_t rotationalVelPIDDeadband =
+    5_deg_per_s;
+}  // namespace pathplanning
 }  // namespace consts::swerve

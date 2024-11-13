@@ -13,12 +13,13 @@
 
 #include "str/vision/VisionSystem.h"
 #include "subsystems/Drive.h"
+#include "Autos.h"
 
 class RobotContainer {
  public:
   RobotContainer();
 
-  frc2::CommandPtr GetAutonomousCommand();
+  frc2::Command* GetAutonomousCommand();
   Drive& GetDrive();
   str::vision::VisionSystem& GetVision();
 
@@ -37,6 +38,8 @@ class RobotContainer {
 
   Drive driveSub;
   str::vision::VisionSystem vision;
+
+  Autos autos{driveSub};
 
   std::shared_ptr<nt::NetworkTable> tuningTable{
       nt::NetworkTableInstance::GetDefault().GetTable("Tuning")};

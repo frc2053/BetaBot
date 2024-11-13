@@ -34,6 +34,10 @@ SwerveDrive::SwerveDrive()
   frc::SmartDashboard::PutData("SwerveField", &swerveField);
 }
 
+frc::ChassisSpeeds SwerveDrive::GetRobotRelativeSpeeds() {
+  return consts::swerve::physical::KINEMATICS.ToChassisSpeeds(moduleStates);
+}
+
 frc::Pose2d SwerveDrive::GetPose() const {
   return poseEstimator.GetEstimatedPosition();
 }
@@ -42,14 +46,16 @@ frc::Pose2d SwerveDrive::GetOdomPose() const {
   return odom.GetPose();
 }
 
-void SwerveDrive::SetXModuleForces(
-    const std::array<units::newton_t, 4>& xForce) {
+void SwerveDrive::SetXModuleForces(const std::vector<units::newton_t>& xForce) {
   xModuleForce = xForce;
 }
 
-void SwerveDrive::SetYModuleForces(
-    const std::array<units::newton_t, 4>& yForce) {
+void SwerveDrive::SetYModuleForces(const std::vector<units::newton_t>& yForce) {
   yModuleForce = yForce;
+}
+
+void SwerveDrive::SetActivePath(std::vector<frc::Pose2d> poses) {
+  swerveField.GetObject("activePath")->SetPoses(poses);
 }
 
 void SwerveDrive::UpdateOdom() {
@@ -241,6 +247,10 @@ void SwerveDrive::DriveFieldRelative(units::meters_per_second_t xVel,
   Drive(speedsToSend.vx, speedsToSend.vy, speedsToSend.omega, openLoop);
 }
 
+void SwerveDrive::Drive(frc::ChassisSpeeds speeds, bool openLoop) {
+  Drive(speeds.vx, speeds.vy, speeds.omega, openLoop);
+}
+
 void SwerveDrive::Drive(units::meters_per_second_t xVel,
                         units::meters_per_second_t yVel,
                         units::radians_per_second_t omega, bool openLoop) {
@@ -282,20 +292,24 @@ void SwerveDrive::SetModuleStates(
   desiredStatesPub.Set(finalState);
 }
 
+// If loading from pathplanner, the module forces are already in robot relative
+// coords
 std::array<units::ampere_t, 4> SwerveDrive::ConvertModuleForcesToTorqueCurrent(
-    const std::array<units::newton_t, 4>& xForce,
-    const std::array<units::newton_t, 4>& yForce) {
+    const std::vector<units::newton_t>& xForce,
+    const std::vector<units::newton_t>& yForce) {
   std::array<frc::SwerveModuleState, 4> forces;
 
   std::array<units::ampere_t, 4> retVal;
-  for (int i = 0; i < 4; i++) {
+  for (size_t i = 0; i < xForce.size(); i++) {
     if (xForce[i] == 0_N && yForce[0] == 0_N) {
       break;
     }
-    frc::Translation2d moduleForceFieldRef{units::meter_t{xForce[i].value()},
+    // frc::Translation2d moduleForceFieldRef{units::meter_t{xForce[i].value()},
+    //                                        units::meter_t{yForce[i].value()}};
+    // frc::Translation2d moduleForceRobotRef =
+    //     moduleForceFieldRef.RotateBy(GetPose().Rotation());
+    frc::Translation2d moduleForceRobotRef{units::meter_t{xForce[i].value()},
                                            units::meter_t{yForce[i].value()}};
-    frc::Translation2d moduleForceRobotRef =
-        moduleForceFieldRef.RotateBy(GetPose().Rotation());
     units::newton_meter_t totalTorqueAtMotor =
         (units::newton_t{moduleForceRobotRef.Norm().value()} *
          consts::swerve::physical::PHY_CHAR.wheelRadius) /

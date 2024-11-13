@@ -10,7 +10,6 @@
 #include <functional>
 
 #include "ctre/phoenix6/SignalLogger.hpp"
-#include "frc/DataLogManager.h"
 #include "frc/geometry/Pose2d.h"
 #include "str/swerve/SwerveDrive.h"
 #include "str/swerve/SwerveModuleHelpers.h"
@@ -18,8 +17,7 @@
 #include "units/current.h"
 #include "units/time.h"
 #include "units/velocity.h"
-#include "wpi/DataLog.h"
-#include "wpi/timestamp.h"
+#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 
 class Drive : public frc2::SubsystemBase {
  public:
@@ -29,6 +27,7 @@ class Drive : public frc2::SubsystemBase {
   void UpdateOdom();
   frc::Pose2d GetRobotPose() const;
   frc::Pose2d GetOdomPose() const;
+  void SetupPathplanner();
   void AddVisionMeasurement(const frc::Pose2d& measurement,
                             units::second_t timestamp,
                             const Eigen::Vector3d& stdDevs);
@@ -57,6 +56,7 @@ class Drive : public frc2::SubsystemBase {
 
  private:
   str::swerve::SwerveDrive swerveDrive{};
+  std::shared_ptr<pathplanner::PPHolonomicDriveController> ppControllers;
 
   str::swerve::WheelRadiusCharData wheelRadiusData{};
 

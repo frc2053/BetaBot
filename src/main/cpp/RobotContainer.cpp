@@ -119,8 +119,8 @@ frc2::CommandPtr RobotContainer::WheelRadiusSysIdCommands(
       driveSub.WheelRadius(frc2::sysid::Direction::kReverse), fwd);
 }
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  return frc2::cmd::Print("No autonomous command configured");
+frc2::Command* RobotContainer::GetAutonomousCommand() {
+  return autos.GetSelectedCommand();
 }
 
 Drive& RobotContainer::GetDrive() {

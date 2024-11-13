@@ -13,9 +13,16 @@
 #include "frc/geometry/Pose2d.h"
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
+#include "pathplanner/lib/util/DriveFeedforwards.h"
 #include "str/swerve/SwerveModuleHelpers.h"
+#include "str/DriverstationUtils.h"
+#include <pathplanner/lib/util/PathPlannerLogging.h>
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <frc/DataLogManager.h>
 
-Drive::Drive() {}
+Drive::Drive() {
+  SetupPathplanner();
+}
 
 void Drive::Periodic() {
   swerveDrive.UpdateNTEntries();
@@ -65,6 +72,33 @@ frc2::CommandPtr Drive::DriveRobotRel(
              },
              {this})
       .WithName("DriveRobotRel");
+}
+
+void Drive::SetupPathplanner() {
+  ppControllers = std::make_shared<pathplanner::PPHolonomicDriveController>(
+      pathplanner::PIDConstants{consts::swerve::pathplanning::POSE_P,
+                                consts::swerve::pathplanning::POSE_I,
+                                consts::swerve::pathplanning::POSE_D},
+      pathplanner::PIDConstants{consts::swerve::pathplanning::ROTATION_P,
+                                consts::swerve::pathplanning::ROTATION_I,
+                                consts::swerve::pathplanning::ROTATION_D});
+
+  pathplanner::AutoBuilder::configure(
+      [this]() { return GetRobotPose(); },
+      [this](frc::Pose2d pose) { swerveDrive.ResetPose(pose); },
+      [this]() { return swerveDrive.GetRobotRelativeSpeeds(); },
+      [this](frc::ChassisSpeeds speeds, pathplanner::DriveFeedforwards ff) {
+        swerveDrive.Drive(speeds, false);
+        swerveDrive.SetXModuleForces(ff.robotRelativeForcesX);
+        swerveDrive.SetYModuleForces(ff.robotRelativeForcesY);
+      },
+      ppControllers, consts::swerve::pathplanning::config,
+      []() { return str::IsOnRed(); }, this);
+
+  pathplanner::PathPlannerLogging::setLogActivePathCallback(
+      [this](std::vector<frc::Pose2d> poses) {
+        swerveDrive.SetActivePath(poses);
+      });
 }
 
 frc2::CommandPtr Drive::SysIdSteerQuasistaticVoltage(
