@@ -4,8 +4,12 @@
 
 #include "subsystems/Drive.h"
 
+#include <frc/DataLogManager.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <pathplanner/lib/util/PathPlannerLogging.h>
 
+#include <memory>
 #include <string>
 
 #include "constants/SwerveConstants.h"
@@ -14,11 +18,8 @@
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
 #include "pathplanner/lib/util/DriveFeedforwards.h"
-#include "str/swerve/SwerveModuleHelpers.h"
 #include "str/DriverstationUtils.h"
-#include <pathplanner/lib/util/PathPlannerLogging.h>
-#include <pathplanner/lib/auto/AutoBuilder.h>
-#include <frc/DataLogManager.h>
+#include "str/swerve/SwerveModuleHelpers.h"
 
 Drive::Drive() {
   SetupPathplanner();

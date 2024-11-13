@@ -6,8 +6,10 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <frc2/command/sysid/SysIdRoutine.h>
+#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 
 #include <functional>
+#include <memory>
 
 #include "ctre/phoenix6/SignalLogger.hpp"
 #include "frc/geometry/Pose2d.h"
@@ -17,7 +19,6 @@
 #include "units/current.h"
 #include "units/time.h"
 #include "units/velocity.h"
-#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 
 class Drive : public frc2::SubsystemBase {
  public:

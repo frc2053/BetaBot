@@ -15,9 +15,9 @@
 #include <networktables/StructTopic.h>
 
 #include <memory>
+#include <vector>
 
 #include <ctre/phoenix6/Pigeon2.hpp>
-#include <vector>
 
 #include "constants/SwerveConstants.h"
 #include "frc/Alert.h"

@@ -11,9 +11,9 @@
 #include <functional>
 #include <memory>
 
+#include "Autos.h"
 #include "str/vision/VisionSystem.h"
 #include "subsystems/Drive.h"
-#include "Autos.h"
 
 class RobotContainer {
  public:

@@ -7,6 +7,8 @@
 #include <frc/DataLogManager.h>
 #include <frc/DriverStation.h>
 
+#include <vector>
+
 #include "constants/SwerveConstants.h"
 #include "ctre/phoenix/StatusCodes.h"
 #include "frc/Alert.h"
