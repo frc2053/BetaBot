@@ -137,6 +137,8 @@ class SwerveDrive {
   nt::StructArrayPublisher<frc::SwerveModuleState> currentStatesPub{
       nt->GetStructArrayTopic<frc::SwerveModuleState>("CurrentStates")
           .Publish()};
+  nt::StructArrayPublisher<frc::Pose2d> activePathPub{
+      nt->GetStructArrayTopic<frc::Pose2d>("ActivePath").Publish()};
   nt::StructArrayPublisher<frc::SwerveModulePosition> currentPositionsPub{
       nt->GetStructArrayTopic<frc::SwerveModulePosition>("CurrentPositions")
           .Publish()};

@@ -10,14 +10,14 @@
           "width": 431,
           "expanded": [
             "/Vision/str_fr_camPoseEstimation/translation",
-            "/Swerve",
             "/Swerve/OdometryPose/rotation",
             "/Swerve/PoseEstimatorPose/rotation",
-            "/Vision"
+            "/SmartDashboard/VisionSystemSim-str_fl_cam/Sim Field",
+            "/Swerve"
           ]
         },
         "tabs": {
-          "selected": 6,
+          "selected": 1,
           "tabs": [
             {
               "type": 0,
@@ -141,6 +141,16 @@
                     "options": {
                       "color": "#ff8c00"
                     }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/Swerve/ActivePath",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
                   }
                 ],
                 "game": "2024 Field",
@@ -238,10 +248,20 @@
                     }
                   },
                   {
+                    "type": "swerveStates",
+                    "logKey": "NT:/Swerve/PathForcesPub",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
                     "type": "ghost",
                     "logKey": "NT:/Swerve/OdometryPose",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "model": "LynkClone",
                       "color": "#0000ff"
@@ -251,7 +271,7 @@
                     "type": "ghost",
                     "logKey": "NT:/Swerve/AddedVisionPoses",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "model": "LynkClone",
                       "color": "#00ff00"
@@ -303,6 +323,16 @@
                       "model": "LynkClone",
                       "color": "#ffff00"
                     }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/Swerve/ActivePath",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "normal"
+                    }
                   }
                 ],
                 "game": "2024 Field",
@@ -313,14 +343,14 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  10.37608674425006,
-                  5.14018959610576,
-                  0.16767350540132944
+                  -4.421077625054751,
+                  5.352729764849907,
+                  4.334578707441611
                 ],
                 "cameraTarget": [
-                  5.574306668907712,
-                  0.26632949711303977,
-                  -0.03370745348536627
+                  -3.4524484976375676,
+                  1.0991429624851292,
+                  0.18463123604264106
                 ]
               },
               "controlsHeight": 441

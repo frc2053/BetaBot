@@ -57,6 +57,7 @@ void SwerveDrive::SetYModuleForces(const std::vector<units::newton_t>& yForce) {
 }
 
 void SwerveDrive::SetActivePath(std::vector<frc::Pose2d> poses) {
+  activePathPub.Set(poses);
   swerveField.GetObject("activePath")->SetPoses(poses);
 }
 

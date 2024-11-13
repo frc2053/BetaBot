@@ -55,6 +55,10 @@
         "Robot": {
           "weight": 2.0
         },
+        "activePath": {
+          "arrows": false,
+          "style": "Line"
+        },
         "bottom": 1476,
         "height": 8.210550308227539,
         "left": 150,
