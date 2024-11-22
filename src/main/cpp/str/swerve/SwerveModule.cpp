@@ -233,8 +233,7 @@ void SwerveModule::ConfigureSteerEncoder(units::turn_t encoderOffset) {
   ctre::phoenix6::configs::CANcoderConfiguration encoderConfig{};
 
   encoderConfig.MagnetSensor.MagnetOffset = encoderOffset;
-  encoderConfig.MagnetSensor.AbsoluteSensorRange =
-      ctre::phoenix6::signals::AbsoluteSensorRangeValue::Signed_PlusMinusHalf;
+  encoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5_tr;
   encoderConfig.MagnetSensor.SensorDirection =
       ctre::phoenix6::signals::SensorDirectionValue::CounterClockwise_Positive;
 

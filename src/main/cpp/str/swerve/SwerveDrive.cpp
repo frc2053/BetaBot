@@ -24,6 +24,7 @@
 #include "units/angular_velocity.h"
 #include "units/current.h"
 #include "units/voltage.h"
+#include "frc/RobotController.h"
 
 using namespace str::swerve;
 
